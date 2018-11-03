@@ -37,7 +37,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let bundle = Bundle(for: type(of: self))
         self.library = try! device.makeDefaultLibrary(bundle: bundle)
 
-        setupRenderPipeline(withDevice: device, library: library, pixelFormat: view.colorPixelFormat)
+        setupRenderPipeline(withDevice: device, library: library, view: view)
     }
 
     func setup(view: MTKView, withDevice device: MTLDevice) {
@@ -46,7 +46,7 @@ class Renderer: NSObject, MTKViewDelegate {
         view.colorPixelFormat = .bgra8Unorm
     }
 
-    func setupRenderPipeline(withDevice device: MTLDevice, library: MTLLibrary, pixelFormat: MTLPixelFormat) {
+    func setupRenderPipeline(withDevice device: MTLDevice, library: MTLLibrary, view: MTKView) {
         let vertexShader = library.makeFunction(name: "passthroughVertex")
         let fragmentShader = library.makeFunction(name: "passthroughFragment")
 
@@ -54,9 +54,9 @@ class Renderer: NSObject, MTKViewDelegate {
         desc.label = "Passthrough Pipeline"
         desc.vertexFunction = vertexShader
         desc.fragmentFunction = fragmentShader
-        if let renderAttachment = desc.colorAttachments[0] {
-            renderAttachment.pixelFormat = pixelFormat
-        }
+        desc.colorAttachments[0].pixelFormat = view.colorPixelFormat
+        desc.depthAttachmentPixelFormat = view.depthStencilPixelFormat
+        desc.stencilAttachmentPixelFormat = view.depthStencilPixelFormat
 
         do {
             renderPipeline = try device.makeRenderPipelineState(descriptor: desc)
