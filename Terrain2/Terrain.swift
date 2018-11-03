@@ -62,6 +62,7 @@ class Terrain: NSObject {
         }
         attributes[VertexAttribute.position.rawValue].name = MDLVertexAttributePosition
         attributes[VertexAttribute.texcoord.rawValue].name = MDLVertexAttributeTextureCoordinate
+        attributes[VertexAttribute.gridCoord.rawValue].name = "Grid Coordinate"
 
         plane.vertexDescriptor = mdlVertexDescriptor
 
