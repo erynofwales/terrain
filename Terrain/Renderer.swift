@@ -48,16 +48,6 @@ class Renderer: NSObject, MTKViewDelegate {
         desc.fragmentFunction = fragmentShader
         if let renderAttachment = desc.colorAttachments[0] {
             renderAttachment.pixelFormat = pixelFormat
-            // Pulled all this from SO. I don't know what it means, but it makes the alpha channel work.
-            // TODO: Learn what this means???
-            // https://stackoverflow.com/q/43727335/1174185
-            renderAttachment.isBlendingEnabled = true
-            renderAttachment.alphaBlendOperation = .add
-            renderAttachment.rgbBlendOperation = .add
-            renderAttachment.sourceRGBBlendFactor = .sourceAlpha
-            renderAttachment.sourceAlphaBlendFactor = .sourceAlpha
-            renderAttachment.destinationRGBBlendFactor = .oneMinusSourceAlpha
-            renderAttachment.destinationAlphaBlendFactor = .oneMinusSourceAlpha
         }
 
         do {
