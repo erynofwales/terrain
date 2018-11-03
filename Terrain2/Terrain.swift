@@ -13,33 +13,33 @@ class Terrain: NSObject {
 
     /// Create a Metal vertex descriptor specifying how vertices will by laid out for input into our render pipeline and how we'll layout our Model IO vertices.
     class func buildVertexDescriptor() -> MTLVertexDescriptor {
-        let mtlVertexDescriptor = MTLVertexDescriptor()
+        let desc = MTLVertexDescriptor()
 
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].format = .float3
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].offset = 0
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].bufferIndex = BufferIndex.meshPositions.rawValue
+        desc.attributes[VertexAttribute.position.rawValue].format = .float3
+        desc.attributes[VertexAttribute.position.rawValue].offset = 0
+        desc.attributes[VertexAttribute.position.rawValue].bufferIndex = deschPositions.rawValue
 
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].format = .float2
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].offset = 0
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = BufferIndex.meshGenerics.rawValue
+        desc.attributes[VertexAttribute.texcoord.rawValue].format = .float2
+        desc.attributes[VertexAttribute.texcoord.rawValue].offset = 0
+        desc.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = deschGenerics.rawValue
 
-        mtlVertexDescriptor.attributes[VertexAttribute.gridCoord.rawValue].format = .uint2
-        mtlVertexDescriptor.attributes[VertexAttribute.gridCoord.rawValue].offset = 0
-        mtlVertexDescriptor.attributes[VertexAttribute.gridCoord.rawValue].bufferIndex = BufferIndex.meshGridCoords.rawValue
+        desc.attributes[VertexAttribute.gridCoord.rawValue].format = .uint2
+        desc.attributes[VertexAttribute.gridCoord.rawValue].offset = 0
+        desc.attributes[VertexAttribute.gridCoord.rawValue].bufferIndex = deschGridCoords.rawValue
 
-        mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stride = 12
-        mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stepFunction = .perVertex
+        desc.layouts[BufferIndex.meshPositions.rawValue].stride = 12
+        desc.layouts[BufferIndex.meshPositions.rawValue].stepRate = 1
+        desc.layouts[BufferIndex.meshPositions.rawValue].stepFunction = .perVertex
 
-        mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stride = 8
-        mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stepFunction = .perVertex
+        desc.layouts[BufferIndex.meshGenerics.rawValue].stride = 8
+        desc.layouts[BufferIndex.meshGenerics.rawValue].stepRate = 1
+        desc.layouts[BufferIndex.meshGenerics.rawValue].stepFunction = .perVertex
 
-        mtlVertexDescriptor.layouts[BufferIndex.meshGridCoords.rawValue].stride = MemoryLayout<uint2>.stride
-        mtlVertexDescriptor.layouts[BufferIndex.meshGridCoords.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.meshGridCoords.rawValue].stepFunction = .perVertex
+        desc.layouts[BufferIndex.meshGridCoords.rawValue].stride = MemoryLayout<uint2>.stride
+        desc.layouts[BufferIndex.meshGridCoords.rawValue].stepRate = 1
+        desc.layouts[BufferIndex.meshGridCoords.rawValue].stepFunction = .perVertex
 
-        return mtlVertexDescriptor
+        return desc
     }
 
     /// Create and condition mesh data to feed into a pipeline using the given vertex descriptor.
