@@ -12,10 +12,10 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBOutlet weak var window: NSWindow!
+    @IBOutlet weak var terrainViewController: TerrainViewController!
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        let terrainVC = TerrainViewController()
-        window.contentViewController = terrainVC
+        window.contentViewController = terrainViewController
         window.makeKeyAndOrderFront(nil)
     }
 
