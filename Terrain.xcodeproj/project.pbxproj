@@ -17,6 +17,12 @@
 		C0C15AA6218DF065007494E2 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AA5218DF065007494E2 /* Shaders.metal */; };
 		C0C15AAA218E2472007494E2 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0C15AA8218E2472007494E2 /* MetalKit.framework */; };
 		C0C15AAB218E2472007494E2 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0C15AA9218E2472007494E2 /* Metal.framework */; };
+		C0C15AB3218E2A90007494E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AB2218E2A90007494E2 /* AppDelegate.swift */; };
+		C0C15AB5218E2A90007494E2 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AB4218E2A90007494E2 /* GameViewController.swift */; };
+		C0C15AB7218E2A90007494E2 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AB6218E2A90007494E2 /* Renderer.swift */; };
+		C0C15AB9218E2A90007494E2 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AB8218E2A90007494E2 /* Shaders.metal */; };
+		C0C15ABC218E2A90007494E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0C15ABB218E2A90007494E2 /* Assets.xcassets */; };
+		C0C15ABF218E2A90007494E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0C15ABD218E2A90007494E2 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +39,16 @@
 		C0C15AA5218DF065007494E2 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		C0C15AA8218E2472007494E2 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		C0C15AA9218E2472007494E2 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		C0C15AB0218E2A8F007494E2 /* Terrain2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Terrain2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0C15AB2218E2A90007494E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C0C15AB4218E2A90007494E2 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		C0C15AB6218E2A90007494E2 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		C0C15AB8218E2A90007494E2 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		C0C15ABA218E2A90007494E2 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		C0C15ABB218E2A90007494E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C0C15ABE218E2A90007494E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C0C15AC0218E2A90007494E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C0C15AC1218E2A90007494E2 /* Terrain2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Terrain2.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +61,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0C15AAD218E2A8F007494E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -52,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				C0C15A8C218DDD85007494E2 /* Terrain */,
+				C0C15AB1218E2A90007494E2 /* Terrain2 */,
 				C0C15A8B218DDD85007494E2 /* Products */,
 				C0C15AA7218E2472007494E2 /* Frameworks */,
 			);
@@ -61,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				C0C15A8A218DDD85007494E2 /* Terrain.app */,
+				C0C15AB0218E2A8F007494E2 /* Terrain2.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,6 +116,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C0C15AB1218E2A90007494E2 /* Terrain2 */ = {
+			isa = PBXGroup;
+			children = (
+				C0C15AB2218E2A90007494E2 /* AppDelegate.swift */,
+				C0C15AB4218E2A90007494E2 /* GameViewController.swift */,
+				C0C15AB6218E2A90007494E2 /* Renderer.swift */,
+				C0C15AB8218E2A90007494E2 /* Shaders.metal */,
+				C0C15ABA218E2A90007494E2 /* ShaderTypes.h */,
+				C0C15ABB218E2A90007494E2 /* Assets.xcassets */,
+				C0C15ABD218E2A90007494E2 /* Main.storyboard */,
+				C0C15AC0218E2A90007494E2 /* Info.plist */,
+				C0C15AC1218E2A90007494E2 /* Terrain2.entitlements */,
+			);
+			path = Terrain2;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -111,6 +152,23 @@
 			productReference = C0C15A8A218DDD85007494E2 /* Terrain.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C0C15AAF218E2A8F007494E2 /* Terrain2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0C15AC2218E2A90007494E2 /* Build configuration list for PBXNativeTarget "Terrain2" */;
+			buildPhases = (
+				C0C15AAC218E2A8F007494E2 /* Sources */,
+				C0C15AAD218E2A8F007494E2 /* Frameworks */,
+				C0C15AAE218E2A8F007494E2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Terrain2;
+			productName = Terrain2;
+			productReference = C0C15AB0218E2A8F007494E2 /* Terrain2.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -122,6 +180,9 @@
 				ORGANIZATIONNAME = "Eryn Wells";
 				TargetAttributes = {
 					C0C15A89218DDD85007494E2 = {
+						CreatedOnToolsVersion = 10.0;
+					};
+					C0C15AAF218E2A8F007494E2 = {
 						CreatedOnToolsVersion = 10.0;
 					};
 				};
@@ -140,6 +201,7 @@
 			projectRoot = "";
 			targets = (
 				C0C15A89218DDD85007494E2 /* Terrain */,
+				C0C15AAF218E2A8F007494E2 /* Terrain2 */,
 			);
 		};
 /* End PBXProject section */
@@ -151,6 +213,15 @@
 			files = (
 				C0C15A90218DDD87007494E2 /* Assets.xcassets in Resources */,
 				C0C15A93218DDD87007494E2 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0C15AAE218E2A8F007494E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0C15ABC218E2A90007494E2 /* Assets.xcassets in Resources */,
+				C0C15ABF218E2A90007494E2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,6 +241,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0C15AAC218E2A8F007494E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0C15AB9218E2A90007494E2 /* Shaders.metal in Sources */,
+				C0C15AB5218E2A90007494E2 /* GameViewController.swift in Sources */,
+				C0C15AB7218E2A90007494E2 /* Renderer.swift in Sources */,
+				C0C15AB3218E2A90007494E2 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -179,6 +261,14 @@
 				C0C15A92218DDD87007494E2 /* Base */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		C0C15ABD218E2A90007494E2 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C0C15ABE218E2A90007494E2 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -337,6 +427,46 @@
 			};
 			name = Release;
 		};
+		C0C15AC3218E2A90007494E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Terrain2/Terrain2.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 78372RE6B4;
+				INFOPLIST_FILE = Terrain2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = Terrain/ShaderTypes.h;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		C0C15AC4218E2A90007494E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Terrain2/Terrain2.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 78372RE6B4;
+				INFOPLIST_FILE = Terrain2/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = Terrain/ShaderTypes.h;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -354,6 +484,15 @@
 			buildConfigurations = (
 				C0C15A99218DDD87007494E2 /* Debug */,
 				C0C15A9A218DDD87007494E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0C15AC2218E2A90007494E2 /* Build configuration list for PBXNativeTarget "Terrain2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0C15AC3218E2A90007494E2 /* Debug */,
+				C0C15AC4218E2A90007494E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
