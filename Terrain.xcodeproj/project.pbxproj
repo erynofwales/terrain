@@ -442,7 +442,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = Terrain/ShaderTypes.h;
+				SWIFT_OBJC_BRIDGING_HEADER = Terrain2/ShaderTypes.h;
 				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
@@ -462,7 +462,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = Terrain/ShaderTypes.h;
+				SWIFT_OBJC_BRIDGING_HEADER = Terrain2/ShaderTypes.h;
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
