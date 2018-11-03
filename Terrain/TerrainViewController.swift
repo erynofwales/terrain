@@ -11,6 +11,8 @@ import MetalKit
 
 class TerrainViewController: NSViewController {
 
+    let renderer = Renderer()
+
     private var metalView: MTKView! {
         return view as? MTKView
     }
@@ -23,6 +25,7 @@ class TerrainViewController: NSViewController {
         v.translatesAutoresizingMaskIntoConstraints = false
         v.widthAnchor.constraint(greaterThanOrEqualToConstant: 640).isActive = true
         v.heightAnchor.constraint(greaterThanOrEqualToConstant: 480).isActive = true
+        v.delegate = renderer
         view = v
     }
     
