@@ -15,21 +15,29 @@ class Terrain: NSObject {
     class func buildVertexDescriptor() -> MTLVertexDescriptor {
         let mtlVertexDescriptor = MTLVertexDescriptor()
 
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].format = MTLVertexFormat.float3
+        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].format = .float3
         mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].offset = 0
         mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].bufferIndex = BufferIndex.meshPositions.rawValue
 
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].format = MTLVertexFormat.float2
+        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].format = .float2
         mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].offset = 0
         mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = BufferIndex.meshGenerics.rawValue
 
+        mtlVertexDescriptor.attributes[VertexAttribute.gridCoord.rawValue].format = .uint2
+        mtlVertexDescriptor.attributes[VertexAttribute.gridCoord.rawValue].offset = 0
+        mtlVertexDescriptor.attributes[VertexAttribute.gridCoord.rawValue].bufferIndex = BufferIndex.meshGridCoords.rawValue
+
         mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stride = 12
         mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stepFunction = MTLVertexStepFunction.perVertex
+        mtlVertexDescriptor.layouts[BufferIndex.meshPositions.rawValue].stepFunction = .perVertex
 
         mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stride = 8
         mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stepFunction = MTLVertexStepFunction.perVertex
+        mtlVertexDescriptor.layouts[BufferIndex.meshGenerics.rawValue].stepFunction = .perVertex
+
+        mtlVertexDescriptor.layouts[BufferIndex.meshGridCoords.rawValue].stride = MemoryLayout<uint2>.stride
+        mtlVertexDescriptor.layouts[BufferIndex.meshGridCoords.rawValue].stepRate = 1
+        mtlVertexDescriptor.layouts[BufferIndex.meshGridCoords.rawValue].stepFunction = .perVertex
 
         return mtlVertexDescriptor
     }
@@ -64,6 +72,7 @@ class Terrain: NSObject {
     let segments: uint2
     let vertexDescriptor: MTLVertexDescriptor
     let mesh: MTKMesh
+    let heights: MTLTexture
 
     init?(dimensions dim: float2, segments seg: uint2, device: MTLDevice) {
         dimensions = dim
@@ -76,6 +85,14 @@ class Terrain: NSObject {
             print("Couldn't create mesh. Error: \(e)")
             return nil
         }
+
+        let heightsDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r16Float, width: Int(segments.x), height: Int(segments.y), mipmapped: false)
+        heightsDesc.usage = [.shaderRead, .shaderWrite]
+        guard let tex = device.makeTexture(descriptor: heightsDesc) else {
+            print("Couldn't create heights texture")
+            return nil
+        }
+        heights = tex
 
         super.init()
     }

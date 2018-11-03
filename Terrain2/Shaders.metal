@@ -20,6 +20,7 @@ typedef struct
 {
     float3 position [[attribute(VertexAttributePosition)]];
     float2 texCoord [[attribute(VertexAttributeTexcoord)]];
+    uint2 gridCoord [[attribute(VertexAttributeGridCoord)]];
 } Vertex;
 
 typedef struct
@@ -29,6 +30,7 @@ typedef struct
 } ColorInOut;
 
 vertex ColorInOut vertexShader(Vertex in [[stage_in]],
+                               texture2d<half> heights [[ texture(1) ]],
                                constant Uniforms & uniforms [[ buffer(BufferIndexUniforms) ]])
 {
     ColorInOut out;

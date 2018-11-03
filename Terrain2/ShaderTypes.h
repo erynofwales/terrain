@@ -23,15 +23,17 @@
 
 typedef NS_ENUM(NSInteger, BufferIndex)
 {
-    BufferIndexMeshPositions = 0,
-    BufferIndexMeshGenerics  = 1,
-    BufferIndexUniforms      = 2
+    BufferIndexMeshPositions  = 0,
+    BufferIndexMeshGenerics   = 1,
+    BufferIndexMeshGridCoords = 2,
+    BufferIndexUniforms       = 3,
 };
 
 typedef NS_ENUM(NSInteger, VertexAttribute)
 {
     VertexAttributePosition  = 0,
     VertexAttributeTexcoord  = 1,
+    VertexAttributeGridCoord = 2,
 };
 
 typedef NS_ENUM(NSInteger, TextureIndex)
