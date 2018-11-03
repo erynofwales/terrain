@@ -150,10 +150,9 @@ class Renderer: NSObject, MTKViewDelegate {
 
         let metalAllocator = MTKMeshBufferAllocator(device: device)
 
-        let mdlMesh = MDLMesh.newBox(withDimensions: float3(4, 4, 4),
-                                     segments: uint3(2, 2, 2),
-                                     geometryType: MDLGeometryType.triangles,
-                                     inwardNormals:false,
+        let plane = MDLMesh.newPlane(withDimensions: float2(6, 6),
+                                     segments: uint2(20, 20),
+                                     geometryType: .triangles,
                                      allocator: metalAllocator)
 
         let mdlVertexDescriptor = MTKModelIOVertexDescriptorFromMetal(mtlVertexDescriptor)
@@ -164,9 +163,9 @@ class Renderer: NSObject, MTKViewDelegate {
         attributes[VertexAttribute.position.rawValue].name = MDLVertexAttributePosition
         attributes[VertexAttribute.texcoord.rawValue].name = MDLVertexAttributeTextureCoordinate
 
-        mdlMesh.vertexDescriptor = mdlVertexDescriptor
+        plane.vertexDescriptor = mdlVertexDescriptor
 
-        return try MTKMesh(mesh:mdlMesh, device:device)
+        return try MTKMesh(mesh:plane, device:device)
     }
 
     class func loadTexture(device: MTLDevice,
@@ -234,15 +233,17 @@ class Renderer: NSObject, MTKViewDelegate {
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                     renderEncoder.label = "Primary Render Encoder"
                     
-                    renderEncoder.pushDebugGroup("Draw Box")
+                    renderEncoder.pushDebugGroup("Draw Plane")
                     
-                    renderEncoder.setCullMode(.back)
+                    renderEncoder.setCullMode(.none)
                     
                     renderEncoder.setFrontFacing(.counterClockwise)
                     
                     renderEncoder.setRenderPipelineState(pipelineState)
                     
                     renderEncoder.setDepthStencilState(depthState)
+
+                    renderEncoder.setTriangleFillMode(.lines)
                     
                     renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
                     renderEncoder.setFragmentBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
