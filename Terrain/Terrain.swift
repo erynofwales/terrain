@@ -45,15 +45,28 @@ class Terrain: NSObject {
         let (cellWidth, cellHeight) = (Float(2.0) / Float(size.width), Float(2.0) / Float(size.height))
         for y in 0..<Int(size.height) {
             for x in 0..<Int(size.width) {
-                vertexes.append(Float3(x: Float(x) * cellWidth, y: Float(y) * cellHeight, z: 0.0))
-                vertexes.append(Float3(x: Float(x) * cellWidth, y: Float(y) * cellHeight + cellHeight, z: 0.0))
-                vertexes.append(Float3(x: Float(x) * cellWidth + cellWidth, y: Float(y) * cellHeight, z: 0.0))
-                vertexes.append(Float3(x: Float(x) * cellWidth + cellWidth, y: Float(y) * cellHeight, z: 0.0))
-                vertexes.append(Float3(x: Float(x) * cellWidth, y: Float(y) * cellHeight + cellHeight, z: 0.0))
-                vertexes.append(Float3(x: Float(x) * cellWidth + cellWidth, y: Float(y) * cellHeight + cellHeight, z: 0.0))
+                vertexes.append(Float3(x: -1 + Float(x) * cellWidth,
+                                       y: -1 + Float(y) * cellHeight,
+                                       z: 0.0))
+                vertexes.append(Float3(x: -1 + Float(x) * cellWidth,
+                                       y: -1 + Float(y) * cellHeight + cellHeight,
+                                       z: 0.0))
+                vertexes.append(Float3(x: -1 + Float(x) * cellWidth + cellWidth,
+                                       y: -1 + Float(y) * cellHeight,
+                                       z: 0.0))
+                vertexes.append(Float3(x: -1 + Float(x) * cellWidth + cellWidth,
+                                       y: -1 + Float(y) * cellHeight,
+                                       z: 0.0))
+                vertexes.append(Float3(x: -1 + Float(x) * cellWidth,
+                                       y: -1 + Float(y) * cellHeight + cellHeight,
+                                       z: 0.0))
+                vertexes.append(Float3(x: -1 + Float(x) * cellWidth + cellWidth,
+                                       y: -1 + Float(y) * cellHeight + cellHeight,
+                                       z: 0.0))
             }
         }
 
+        buffer.label = "Terrain Vertex Data"
         self.buffer = buffer
         memcpy(buffer.contents(), vertexes, expectedLength)
     }
