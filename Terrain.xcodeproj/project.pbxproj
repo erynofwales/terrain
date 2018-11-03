@@ -13,6 +13,7 @@
 		C0C15A9D218DDDC3007494E2 /* TerrainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15A9B218DDDC3007494E2 /* TerrainViewController.swift */; };
 		C0C15AA0218DE0B2007494E2 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15A9F218DE0B2007494E2 /* Renderer.swift */; };
 		C0C15AA2218DE21E007494E2 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AA1218DE21E007494E2 /* Math.swift */; };
+		C0C15AA4218DE615007494E2 /* Terrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AA3218DE615007494E2 /* Terrain.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		C0C15A9B218DDDC3007494E2 /* TerrainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerrainViewController.swift; sourceTree = "<group>"; };
 		C0C15A9F218DE0B2007494E2 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		C0C15AA1218DE21E007494E2 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
+		C0C15AA3218DE615007494E2 /* Terrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Terrain.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				C0C15A8D218DDD85007494E2 /* AppDelegate.swift */,
 				C0C15A9B218DDDC3007494E2 /* TerrainViewController.swift */,
 				C0C15A9F218DE0B2007494E2 /* Renderer.swift */,
+				C0C15AA3218DE615007494E2 /* Terrain.swift */,
 				C0C15AA1218DE21E007494E2 /* Math.swift */,
 				C0C15A8F218DDD87007494E2 /* Assets.xcassets */,
 				C0C15A91218DDD87007494E2 /* MainMenu.xib */,
@@ -141,6 +144,7 @@
 			files = (
 				C0C15A9D218DDDC3007494E2 /* TerrainViewController.swift in Sources */,
 				C0C15AA0218DE0B2007494E2 /* Renderer.swift in Sources */,
+				C0C15AA4218DE615007494E2 /* Terrain.swift in Sources */,
 				C0C15A8E218DDD85007494E2 /* AppDelegate.swift in Sources */,
 				C0C15AA2218DE21E007494E2 /* Math.swift in Sources */,
 			);
