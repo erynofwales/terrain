@@ -17,7 +17,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var commandQueue: MTLCommandQueue!
     var renderPipeline: MTLRenderPipelineState!
 
-    var terrainGridSize = CGSize(width: 11, height: 11)
+    var terrainGridSize = CGSize(width: 2, height: 2)
     var terrain = Terrain()
 
     func setupMetal(withView view: MTKView) {
@@ -89,10 +89,12 @@ class Renderer: NSObject, MTKViewDelegate {
 
         if let renderPass = view.currentRenderPassDescriptor {
             if let encoder = buffer.makeRenderCommandEncoder(descriptor: renderPass) {
+                let vertexCount = terrain.vertexCount(forGridSize: terrainGridSize)
+
                 encoder.label = "Terrain"
                 encoder.setRenderPipelineState(renderPipeline)
                 encoder.setVertexBuffer(terrain.buffer, offset: 0, index: 0)
-                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: terrain.vertexCount(forGridSize: terrainGridSize))
+                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount)
                 encoder.setTriangleFillMode(.lines)
                 encoder.endEncoding()
                 didEncode = true
