@@ -114,9 +114,3 @@ extension Matrix4x4 {
         return matrix_multiply(left, right)
     }
 }
-
-extension CGSize {
-    init(size: Size) {
-        self.init(width: CGFloat(size.x), height: CGFloat(size.y))
-    }
-}
