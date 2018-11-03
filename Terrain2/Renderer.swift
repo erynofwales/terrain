@@ -202,7 +202,8 @@ class Renderer: NSObject, MTKViewDelegate {
                             renderEncoder.setVertexBuffer(buffer.buffer, offset:buffer.offset, index: index)
                         }
                     }
-                    
+
+                    renderEncoder.setVertexTexture(terrain.heights, index: 0)
                     renderEncoder.setFragmentTexture(colorMap, index: TextureIndex.color.rawValue)
                     
                     for submesh in terrain.mesh.submeshes {
@@ -211,7 +212,6 @@ class Renderer: NSObject, MTKViewDelegate {
                                                             indexType: submesh.indexType,
                                                             indexBuffer: submesh.indexBuffer.buffer,
                                                             indexBufferOffset: submesh.indexBuffer.offset)
-                        
                     }
                     
                     renderEncoder.popDebugGroup()
