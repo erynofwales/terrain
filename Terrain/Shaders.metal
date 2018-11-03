@@ -19,17 +19,14 @@ struct RasterizerData {
     float2 textureCoordinate;
 };
 
-vertex RasterizerData passthroughVertex(constant packed_float3 *vertexes [[buffer(0)]],
-                                        uint vid [[vertex_id]])
+vertex float4 passthroughVertex(constant packed_float3 *vertexes [[buffer(0)]],
+                                uint vid [[vertex_id]])
 {
     constant packed_float3 &v = vertexes[vid];
-    RasterizerData out;
-    out.position = float4(v, 1.0);
-    out.textureCoordinate = float2();
-    return out;
+    return float4(v, 1.0);
 }
 
-fragment half4 passthroughFragment(RasterizerData in [[stage_in]])
+fragment half4 passthroughFragment()
 {
     return half4(1.0);
 }
