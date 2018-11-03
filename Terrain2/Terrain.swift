@@ -17,15 +17,15 @@ class Terrain: NSObject {
 
         desc.attributes[VertexAttribute.position.rawValue].format = .float3
         desc.attributes[VertexAttribute.position.rawValue].offset = 0
-        desc.attributes[VertexAttribute.position.rawValue].bufferIndex = deschPositions.rawValue
+        desc.attributes[VertexAttribute.position.rawValue].bufferIndex = BufferIndex.meshPositions.rawValue
 
         desc.attributes[VertexAttribute.texcoord.rawValue].format = .float2
         desc.attributes[VertexAttribute.texcoord.rawValue].offset = 0
-        desc.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = deschGenerics.rawValue
+        desc.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = BufferIndex.meshGenerics.rawValue
 
         desc.attributes[VertexAttribute.gridCoord.rawValue].format = .uint2
         desc.attributes[VertexAttribute.gridCoord.rawValue].offset = 0
-        desc.attributes[VertexAttribute.gridCoord.rawValue].bufferIndex = deschGridCoords.rawValue
+        desc.attributes[VertexAttribute.gridCoord.rawValue].bufferIndex = BufferIndex.meshGridCoords.rawValue
 
         desc.layouts[BufferIndex.meshPositions.rawValue].stride = 12
         desc.layouts[BufferIndex.meshPositions.rawValue].stepRate = 1
