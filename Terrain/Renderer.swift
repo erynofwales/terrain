@@ -20,8 +20,13 @@ class Renderer: NSObject, MTKViewDelegate {
     var terrainGridSize = CGSize(width: 11, height: 11)
     var terrain = Terrain()
 
-    func setupMetal(withDevice device: MTLDevice, pixelFormat: MTLPixelFormat) {
+    func setupMetal(withView view: MTKView) {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            fatalError("Unable to create system Metal device")
+        }
         self.device = device
+
+        setup(view: view, withDevice: device)
 
         guard let queue = device.makeCommandQueue() else {
             fatalError("Unable to create Metal command queue")
@@ -30,12 +35,15 @@ class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = queue
 
         let bundle = Bundle(for: type(of: self))
-        guard let library = try? device.makeDefaultLibrary(bundle: bundle) else {
-            fatalError("Unable to create default Metal library")
-        }
-        self.library = library
+        self.library = try! device.makeDefaultLibrary(bundle: bundle)
 
-        setupRenderPipeline(withDevice: device, library: library, pixelFormat: pixelFormat)
+        setupRenderPipeline(withDevice: device, library: library, pixelFormat: view.colorPixelFormat)
+    }
+
+    func setup(view: MTKView, withDevice device: MTLDevice) {
+        view.device = device
+        view.clearColor = MTLClearColor(red: 1, green: 0, blue: 0, alpha: 1)
+        view.colorPixelFormat = .bgra8Unorm
     }
 
     func setupRenderPipeline(withDevice device: MTLDevice, library: MTLLibrary, pixelFormat: MTLPixelFormat) {
@@ -43,7 +51,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let fragmentShader = library.makeFunction(name: "passthroughFragment")
 
         let desc = MTLRenderPipelineDescriptor()
-        desc.label = "Pixel Pipeline"
+        desc.label = "Passthrough Pipeline"
         desc.vertexFunction = vertexShader
         desc.fragmentFunction = fragmentShader
         if let renderAttachment = desc.colorAttachments[0] {
@@ -64,6 +72,8 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         terrain.generateVertexes(intoBuffer: buffer, size: terrainGridSize)
     }
+
+    // MARK: - MTKViewDelegate
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         print("Size of \(view.debugDescription) will change to \(size)")
