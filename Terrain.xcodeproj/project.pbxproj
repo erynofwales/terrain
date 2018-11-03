@@ -23,6 +23,7 @@
 		C0C15AB9218E2A90007494E2 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AB8218E2A90007494E2 /* Shaders.metal */; };
 		C0C15ABC218E2A90007494E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0C15ABB218E2A90007494E2 /* Assets.xcassets */; };
 		C0C15ABF218E2A90007494E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0C15ABD218E2A90007494E2 /* Main.storyboard */; };
+		C0C15AC6218E32B3007494E2 /* Terrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AC5218E32B2007494E2 /* Terrain.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		C0C15ABE218E2A90007494E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C0C15AC0218E2A90007494E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C0C15AC1218E2A90007494E2 /* Terrain2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Terrain2.entitlements; sourceTree = "<group>"; };
+		C0C15AC5218E32B2007494E2 /* Terrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Terrain.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				C0C15AB2218E2A90007494E2 /* AppDelegate.swift */,
 				C0C15AB4218E2A90007494E2 /* GameViewController.swift */,
 				C0C15AB6218E2A90007494E2 /* Renderer.swift */,
+				C0C15AC5218E32B2007494E2 /* Terrain.swift */,
 				C0C15AB8218E2A90007494E2 /* Shaders.metal */,
 				C0C15ABA218E2A90007494E2 /* ShaderTypes.h */,
 				C0C15ABB218E2A90007494E2 /* Assets.xcassets */,
@@ -247,6 +250,7 @@
 			files = (
 				C0C15AB9218E2A90007494E2 /* Shaders.metal in Sources */,
 				C0C15AB5218E2A90007494E2 /* GameViewController.swift in Sources */,
+				C0C15AC6218E32B3007494E2 /* Terrain.swift in Sources */,
 				C0C15AB7218E2A90007494E2 /* Renderer.swift in Sources */,
 				C0C15AB3218E2A90007494E2 /* AppDelegate.swift in Sources */,
 			);
