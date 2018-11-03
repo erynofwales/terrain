@@ -29,11 +29,17 @@ class TerrainViewController: NSViewController {
     }
 
     override func viewDidLoad() {
-        guard let device = metalView.device else {
-            fatalError("Couldn't get device from Metal view")
-        }
-        renderer = Renderer(device: device)
+        renderer = Renderer()
         metalView.delegate = renderer
+    }
+
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        guard let device = metalView.device else {
+            return
+        }
+        renderer.setupMetal(withDevice: device, pixelFormat: metalView.colorPixelFormat)
+        renderer.prepareToRender()
     }
     
 }

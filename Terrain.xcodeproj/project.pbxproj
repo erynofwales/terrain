@@ -14,6 +14,7 @@
 		C0C15AA0218DE0B2007494E2 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15A9F218DE0B2007494E2 /* Renderer.swift */; };
 		C0C15AA2218DE21E007494E2 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AA1218DE21E007494E2 /* Math.swift */; };
 		C0C15AA4218DE615007494E2 /* Terrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AA3218DE615007494E2 /* Terrain.swift */; };
+		C0C15AA6218DF065007494E2 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AA5218DF065007494E2 /* Shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		C0C15A9F218DE0B2007494E2 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		C0C15AA1218DE21E007494E2 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		C0C15AA3218DE615007494E2 /* Terrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Terrain.swift; sourceTree = "<group>"; };
+		C0C15AA5218DF065007494E2 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 				C0C15A9F218DE0B2007494E2 /* Renderer.swift */,
 				C0C15AA3218DE615007494E2 /* Terrain.swift */,
 				C0C15AA1218DE21E007494E2 /* Math.swift */,
+				C0C15AA5218DF065007494E2 /* Shaders.metal */,
 				C0C15A8F218DDD87007494E2 /* Assets.xcassets */,
 				C0C15A91218DDD87007494E2 /* MainMenu.xib */,
 				C0C15A94218DDD87007494E2 /* Info.plist */,
@@ -142,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0C15AA6218DF065007494E2 /* Shaders.metal in Sources */,
 				C0C15A9D218DDDC3007494E2 /* TerrainViewController.swift in Sources */,
 				C0C15AA0218DE0B2007494E2 /* Renderer.swift in Sources */,
 				C0C15AA4218DE615007494E2 /* Terrain.swift in Sources */,
