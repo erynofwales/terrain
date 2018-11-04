@@ -70,9 +70,12 @@ class Terrain: NSObject {
         return try MTKMesh(mesh:plane, device:device)
     }
 
-    class func buildHeightsTexture(dimensions: uint2, device: MTLDevice) -> MTLTexture? {
-        let heightsDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: Int(dimensions.x), height: Int(dimensions.y), mipmapped: false)
+    private static let heightMapSize = MTLSize(width: 512, height: 512, depth: 1)
+
+    class func buildHeightsTexture(device: MTLDevice) -> MTLTexture? {
+        let heightsDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: heightMapSize.width, height: heightMapSize.height, mipmapped: false)
         heightsDesc.usage = [.shaderRead, .shaderWrite]
+
         let tex = device.makeTexture(descriptor: heightsDesc)
 
         if let tex = tex {
@@ -96,7 +99,7 @@ class Terrain: NSObject {
     let segments: uint2
     let vertexDescriptor: MTLVertexDescriptor
     let mesh: MTKMesh
-    let heights: MTLTexture
+    let heightMap: MTLTexture
 
     init?(dimensions dim: float2, segments seg: uint2, device: MTLDevice) {
         dimensions = dim
@@ -110,12 +113,11 @@ class Terrain: NSObject {
             return nil
         }
 
-        let heightsDimensions = segments
-        guard let tex = Terrain.buildHeightsTexture(dimensions: heightsDimensions, device: device) else {
+        guard let tex = Terrain.buildHeightsTexture(device: device) else {
             print("Couldn't create heights texture")
             return nil
         }
-        heights = tex
+        heightMap = tex
 
         super.init()
     }

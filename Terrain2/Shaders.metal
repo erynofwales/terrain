@@ -33,14 +33,13 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
                                texture2d<float> heights [[texture(0)]],
                                constant Uniforms & uniforms [[buffer(BufferIndexUniforms)]])
 {
-    constexpr sampler s(coord::pixel, address::clamp_to_zero, filter::linear);
+    constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
 
     ColorInOut out;
 
-    // TODO: Concerned about this.
-    uint2 gridCoord(in.texCoord.x * heights.get_width(), in.texCoord.y * heights.get_height());
-    float4 height = heights.read(gridCoord).rrrr;
+    float4 height = heights.sample(s, in.texCoord);
 
+    // Replace the y coordinate with the height we read from the texture.
     float4 position(in.position.x, height.r, in.position.z, 1.0);
     out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
     out.texCoord = in.texCoord;
@@ -58,5 +57,5 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
 
     half4 colorSample   = colorMap.sample(colorSampler, in.texCoord.xy);
 
-    return float4(colorSample);
+    return float4(1.0);
 }

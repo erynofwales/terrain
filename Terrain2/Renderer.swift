@@ -61,7 +61,7 @@ class Renderer: NSObject, MTKViewDelegate {
         metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
         metalKitView.sampleCount = 1
 
-        terrain = Terrain(dimensions: float2(8, 8), segments: uint2(20, 20), device: device)!
+        terrain = Terrain(dimensions: float2(10, 10), segments: uint2(100, 100), device: device)!
 
         do {
             pipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
@@ -145,11 +145,11 @@ class Renderer: NSObject, MTKViewDelegate {
 
         uniforms[0].projectionMatrix = projectionMatrix
 
-        let rotationAxis = float3(1, 1, 0)
+        let rotationAxis = float3(0, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
-        let viewMatrix = matrix4x4_translation(0.0, 0.0, -8.0)
+        let viewMatrix = matrix4x4_translation(0.0, -2.0, -8.0)
         uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
-        rotation += 0.01
+        rotation += 0.0025
     }
 
     func draw(in view: MTKView) {
@@ -203,7 +203,7 @@ class Renderer: NSObject, MTKViewDelegate {
                         }
                     }
 
-                    renderEncoder.setVertexTexture(terrain.heights, index: 0)
+                    renderEncoder.setVertexTexture(terrain.heightMap, index: 0)
                     renderEncoder.setFragmentTexture(colorMap, index: TextureIndex.color.rawValue)
                     
                     for submesh in terrain.mesh.submeshes {
