@@ -69,9 +69,7 @@ class Terrain: NSObject {
 
         return try MTKMesh(mesh:plane, device:device)
     }
-
-    private static let heightMapSize = MTLSize(width: 512, height: 512, depth: 1)
-
+    
     let dimensions: float2
     let segments: uint2
     let vertexDescriptor: MTLVertexDescriptor
