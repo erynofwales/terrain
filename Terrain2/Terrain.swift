@@ -72,36 +72,14 @@ class Terrain: NSObject {
 
     private static let heightMapSize = MTLSize(width: 512, height: 512, depth: 1)
 
-    class func buildHeightsTexture(device: MTLDevice) -> MTLTexture? {
-        let heightsDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: heightMapSize.width, height: heightMapSize.height, mipmapped: false)
-        heightsDesc.usage = [.shaderRead, .shaderWrite]
-
-        let tex = device.makeTexture(descriptor: heightsDesc)
-
-        if let tex = tex {
-            var initialHeights = [Float]()
-            let numberOfHeights = tex.height * tex.width
-            initialHeights.reserveCapacity(numberOfHeights)
-            for _ in 0..<numberOfHeights {
-                initialHeights.append(Float.random(in: 0...0.5))
-            }
-            let origin = MTLOrigin(x: 0, y: 0, z: 0)
-            let size = MTLSize(width: tex.width, height: tex.height, depth: 1)
-            let region = MTLRegion(origin: origin, size: size)
-            let bytesPerRow = MemoryLayout<Float>.stride * tex.width
-            tex.replace(region: region, mipmapLevel: 0, withBytes: initialHeights, bytesPerRow: bytesPerRow)
-        }
-
-        return tex
-    }
-
     let dimensions: float2
     let segments: uint2
     let vertexDescriptor: MTLVertexDescriptor
     let mesh: MTKMesh
-    let heightMap: MTLTexture
 
-    init?(dimensions dim: float2, segments seg: uint2, device: MTLDevice) {
+    var algorithm: Algorithm
+
+    init?(dimensions dim: float2, segments seg: uint2, device: MTLDevice, library: MTLLibrary) {
         dimensions = dim
         segments = seg
         vertexDescriptor = Terrain.buildVertexDescriptor()
@@ -113,11 +91,11 @@ class Terrain: NSObject {
             return nil
         }
 
-        guard let tex = Terrain.buildHeightsTexture(device: device) else {
-            print("Couldn't create heights texture")
+        guard let alg = ZeroAlgorithm(device: device, library: library) else {
+            print("Couldn't create algorithm")
             return nil
         }
-        heightMap = tex
+        algorithm = alg
 
         super.init()
     }

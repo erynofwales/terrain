@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08C589F218F46F000EAFC2D /* Algorithms.swift */; };
+		C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */ = {isa = PBXBuildFile; fileRef = C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */; };
 		C0C15A8E218DDD85007494E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15A8D218DDD85007494E2 /* AppDelegate.swift */; };
 		C0C15A90218DDD87007494E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0C15A8F218DDD87007494E2 /* Assets.xcassets */; };
 		C0C15A93218DDD87007494E2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C0C15A91218DDD87007494E2 /* MainMenu.xib */; };
@@ -27,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C08C589F218F46F000EAFC2D /* Algorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithms.swift; sourceTree = "<group>"; };
+		C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TerrainAlgorithms.metal; sourceTree = "<group>"; };
 		C0C15A8A218DDD85007494E2 /* Terrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Terrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0C15A8D218DDD85007494E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C0C15A8F218DDD87007494E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -125,7 +129,9 @@
 				C0C15AB4218E2A90007494E2 /* GameViewController.swift */,
 				C0C15AB6218E2A90007494E2 /* Renderer.swift */,
 				C0C15AC5218E32B2007494E2 /* Terrain.swift */,
+				C08C589F218F46F000EAFC2D /* Algorithms.swift */,
 				C0C15AB8218E2A90007494E2 /* Shaders.metal */,
+				C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */,
 				C0C15ABA218E2A90007494E2 /* ShaderTypes.h */,
 				C0C15ABB218E2A90007494E2 /* Assets.xcassets */,
 				C0C15ABD218E2A90007494E2 /* Main.storyboard */,
@@ -248,11 +254,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */,
 				C0C15AB9218E2A90007494E2 /* Shaders.metal in Sources */,
 				C0C15AB5218E2A90007494E2 /* GameViewController.swift in Sources */,
 				C0C15AC6218E32B3007494E2 /* Terrain.swift in Sources */,
 				C0C15AB7218E2A90007494E2 /* Renderer.swift in Sources */,
 				C0C15AB3218E2A90007494E2 /* AppDelegate.swift in Sources */,
+				C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

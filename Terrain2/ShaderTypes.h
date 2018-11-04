@@ -41,6 +41,12 @@ typedef NS_ENUM(NSInteger, TextureIndex)
     TextureIndexColor    = 0,
 };
 
+typedef NS_ENUM(NSInteger, GeneratorTextureIndex)
+{
+    GeneratorTextureIndexIn  = 0,
+    GeneratorTextureIndexOut = 1,
+};
+
 typedef struct
 {
     matrix_float4x4 projectionMatrix;

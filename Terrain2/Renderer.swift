@@ -24,6 +24,7 @@ enum RendererError: Error {
 class Renderer: NSObject, MTKViewDelegate {
 
     public let device: MTLDevice
+    let library: MTLLibrary
     let commandQueue: MTLCommandQueue
     var dynamicUniformBuffer: MTLBuffer
     var pipelineState: MTLRenderPipelineState
@@ -61,10 +62,17 @@ class Renderer: NSObject, MTKViewDelegate {
         metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
         metalKitView.sampleCount = 1
 
-        terrain = Terrain(dimensions: float2(10, 10), segments: uint2(100, 100), device: device)!
+        guard let library = device.makeDefaultLibrary() else {
+            print("Unable to create default library")
+            return nil
+        }
+        self.library = library
+
+        terrain = Terrain(dimensions: float2(10, 10), segments: uint2(100, 100), device: device, library: library)!
 
         do {
             pipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
+                                                                       library: library,
                                                                        metalKitView: metalKitView,
                                                                        mtlVertexDescriptor: terrain.vertexDescriptor)
         } catch {
@@ -89,14 +97,13 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     class func buildRenderPipelineWithDevice(device: MTLDevice,
+                                             library: MTLLibrary,
                                              metalKitView: MTKView,
                                              mtlVertexDescriptor: MTLVertexDescriptor) throws -> MTLRenderPipelineState {
         /// Build a render state pipeline object
 
-        let library = device.makeDefaultLibrary()
-
-        let vertexFunction = library?.makeFunction(name: "vertexShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentShader")
+        let vertexFunction = library.makeFunction(name: "vertexShader")
+        let fragmentFunction = library.makeFunction(name: "fragmentShader")
 
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.label = "RenderPipeline"
@@ -203,7 +210,7 @@ class Renderer: NSObject, MTKViewDelegate {
                         }
                     }
 
-                    renderEncoder.setVertexTexture(terrain.heightMap, index: 0)
+                    renderEncoder.setVertexTexture(terrain.algorithm.outTexture, index: 0)
                     renderEncoder.setFragmentTexture(colorMap, index: TextureIndex.color.rawValue)
                     
                     for submesh in terrain.mesh.submeshes {
