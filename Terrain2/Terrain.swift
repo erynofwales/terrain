@@ -43,10 +43,11 @@ class Terrain: NSObject {
     }
 
     /// Create and condition mesh data to feed into a pipeline using the given vertex descriptor.
-    /// @param dimensions Coordinate dimensions of the plane
-    /// @param segments Number of segments to divide each dimension into
-    /// @param device Metal device
-    /// @param vertexDescriptor Description of how to lay out vertex data in GPU memory
+    ///
+    /// - parameter dimensions: Coordinate dimensions of the plane.
+    /// - parameter segments: Number of segments to divide each dimension into.
+    /// - parameter device: Metal device.
+    /// - parameter vertexDescriptor: Description of how to lay out vertex data in GPU memory.
     class func buildMesh(withDimensions dimensions: float2, segments: uint2, device: MTLDevice, vertexDescriptor: MTLVertexDescriptor) throws -> MTKMesh {
         let metalAllocator = MTKMeshBufferAllocator(device: device)
 
