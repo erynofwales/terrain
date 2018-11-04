@@ -91,7 +91,7 @@ class Terrain: NSObject {
             return nil
         }
 
-        guard let alg = ZeroAlgorithm(device: device, library: library) else {
+        guard let alg = RandomAlgorithm(device: device, library: library) else {
             print("Couldn't create algorithm")
             return nil
         }

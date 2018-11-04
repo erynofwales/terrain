@@ -45,6 +45,8 @@ class Renderer: NSObject, MTKViewDelegate {
 
     var terrain: Terrain
 
+    var iterateTerrainAlgorithm = true
+
     init?(metalKitView: MTKView) {
         self.device = metalKitView.device!
         self.commandQueue = self.device.makeCommandQueue()!
@@ -167,19 +169,28 @@ class Renderer: NSObject, MTKViewDelegate {
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             let semaphore = inFlightSemaphore
             commandBuffer.addCompletedHandler { (_ commandBuffer)-> Swift.Void in
+                self.iterateTerrainAlgorithm = false
                 semaphore.signal()
             }
             
             self.updateDynamicBufferState()
             
             self.updateGameState()
+
+            if iterateTerrainAlgorithm, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+                print("Scheduling terrain generator iteration with \(terrain.algorithm.name) algorithm")
+                computeEncoder.label = "Generator Encoder"
+                computeEncoder.pushDebugGroup("Generate Terrain: \(terrain.algorithm.name)")
+                terrain.algorithm.encode(in: computeEncoder)
+                computeEncoder.popDebugGroup()
+                computeEncoder.endEncoding()
+            }
             
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid
             ///   holding onto the drawable and blocking the display pipeline any longer than necessary
             let renderPassDescriptor = view.currentRenderPassDescriptor
             
             if let renderPassDescriptor = renderPassDescriptor {
-                
                 /// Final pass rendering code here
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                     renderEncoder.label = "Primary Render Encoder"

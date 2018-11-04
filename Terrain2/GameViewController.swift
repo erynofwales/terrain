@@ -42,4 +42,23 @@ class GameViewController: NSViewController {
 
         mtkView.delegate = renderer
     }
+
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        view.window?.makeFirstResponder(self)
+    }
+
+    override var acceptsFirstResponder: Bool {
+        return true
+    }
+
+    override func keyDown(with event: NSEvent) {
+        print("key down: \(String(describing: event.charactersIgnoringModifiers))")
+        switch event.charactersIgnoringModifiers {
+        case .some("n"):
+            renderer.iterateTerrainAlgorithm = true
+        default:
+            super.keyDown(with: event)
+        }
+    }
 }

@@ -19,5 +19,6 @@ kernel void zeroKernel(texture2d<float, access::write> outTexture [[texture(Gene
 kernel void randomKernel(texture2d<float, access::write> outTexture [[texture(GeneratorTextureIndexOut)]],
                          uint2 tid [[thread_position_in_grid]])
 {
-
+    float x = 2.0 * M_PI_F * (tid.x / 128.0);
+    outTexture.write(sin(x), tid);
 }

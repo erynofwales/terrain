@@ -15,8 +15,10 @@ enum KernelError: Error {
 }
 
 protocol Algorithm {
-    static var name: String { get }
+    var name: String { get }
     var outTexture: MTLTexture { get }
+
+    func encode(in encoder: MTLComputeCommandEncoder)
 }
 
 class Kernel {
@@ -33,10 +35,10 @@ class Kernel {
     let textures: [MTLTexture]
 
     var outTexture: MTLTexture {
-        return textures[indexes.out]
+        return textures[textureIndexes.out]
     }
 
-    private(set) var indexes: (`in`: Int, out: Int) = (in: 0, out: 1)
+    private(set) var textureIndexes: (`in`: Int, out: Int) = (in: 0, out: 1)
 
     init(device: MTLDevice, library: MTLLibrary, functionName: String) throws {
         guard let computeFunction = library.makeFunction(name: functionName) else {
@@ -56,17 +58,17 @@ class Kernel {
         self.textures = textures
     }
 
-    func encode(in encoder: MTLComputeCommandEncoder, inTexture: MTLTexture?, outTexture: MTLTexture?) {
+    func encode(in encoder: MTLComputeCommandEncoder) {
         encoder.setComputePipelineState(pipeline)
-        encoder.setTexture(inTexture, index: GeneratorTextureIndex.in.rawValue)
-        encoder.setTexture(inTexture, index: GeneratorTextureIndex.out.rawValue)
+        encoder.setTexture(textures[textureIndexes.in], index: textureIndexes.in)
+        encoder.setTexture(textures[textureIndexes.out], index: textureIndexes.out)
         encoder.dispatchThreads(Kernel.textureSize, threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
     }
 }
 
 /// "Compute" zero for every value of the height map.
 class ZeroAlgorithm: Kernel, Algorithm {
-    static let name = "Zero"
+    let name = "Zero"
 
     init?(device: MTLDevice, library: MTLLibrary) {
         do {
@@ -80,7 +82,7 @@ class ZeroAlgorithm: Kernel, Algorithm {
 
 /// Randomly generate heights that are independent of all others.
 class RandomAlgorithm: Kernel, Algorithm {
-    static let name = "Random"
+    let name = "Random"
 
     init?(device: MTLDevice, library: MTLLibrary) {
         do {
