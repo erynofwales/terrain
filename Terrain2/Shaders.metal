@@ -37,6 +37,7 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
 
     ColorInOut out;
 
+    // TODO: Concerned about this.
     uint2 gridCoord(in.texCoord.x * heights.get_width(), in.texCoord.y * heights.get_height());
     half4 height = heights.read(gridCoord).rrrr;
 
