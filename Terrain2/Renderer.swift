@@ -32,6 +32,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var colorMap: MTLTexture
 
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
+    let regenerationSemaphore = DispatchSemaphore(value: 1)
 
     var uniformBufferOffset = 0
 
@@ -45,7 +46,7 @@ class Renderer: NSObject, MTKViewDelegate {
 
     var terrain: Terrain
 
-    var iterateTerrainAlgorithm = true
+    private var iterateTerrainAlgorithm = true
 
     init?(metalKitView: MTKView) {
         self.device = metalKitView.device!
@@ -139,6 +140,12 @@ class Renderer: NSObject, MTKViewDelegate {
 
     }
 
+    func scheduleAlgorithmIteration() {
+        regenerationSemaphore.wait()
+        iterateTerrainAlgorithm = true
+        regenerationSemaphore.signal()
+    }
+
     private func updateDynamicBufferState() {
         /// Update the state of our uniform buffers before rendering
 
@@ -168,14 +175,17 @@ class Renderer: NSObject, MTKViewDelegate {
         /// Per frame updates hare
 
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        _ = regenerationSemaphore.wait(timeout: DispatchTime.distantFuture)
         
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             var didScheduleAlgorithmIteration = false
-            let inFlightSem = self.inFlightSemaphore
+            let inFlightSem = inFlightSemaphore
+            let regenSem = regenerationSemaphore
             commandBuffer.addCompletedHandler { (_ commandBuffer)-> Swift.Void in
                 if didScheduleAlgorithmIteration && self.iterateTerrainAlgorithm {
                     self.iterateTerrainAlgorithm = false
                 }
+                regenSem.signal()
                 inFlightSem.signal()
             }
             

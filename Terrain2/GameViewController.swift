@@ -56,7 +56,7 @@ class GameViewController: NSViewController {
         print("key down: \(String(describing: event.charactersIgnoringModifiers))")
         switch event.charactersIgnoringModifiers {
         case .some("n"):
-            renderer.iterateTerrainAlgorithm = true
+            renderer.scheduleAlgorithmIteration()
         default:
             super.keyDown(with: event)
         }
