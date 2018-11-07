@@ -151,6 +151,9 @@ class Renderer: NSObject, MTKViewDelegate {
 
     private func updateGameState() {
         /// Update any game state before rendering
+        if iterateTerrainAlgorithm {
+            terrain.algorithm.updateUniforms()
+        }
 
         uniforms[0].projectionMatrix = projectionMatrix
 

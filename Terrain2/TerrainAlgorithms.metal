@@ -49,12 +49,14 @@ kernel void zeroKernel(texture2d<float, access::write> outTexture [[texture(Gene
     outTexture.write(0, tid);
 }
 
+#pragma mark - RandomAlgorithm
+
 kernel void randomKernel(texture2d<float, access::write> outTexture [[texture(GeneratorTextureIndexOut)]],
-                         uint2 tid [[thread_position_in_grid]],
-                         uint2 tgid [[threadgroup_position_in_grid]])
+                         constant RandomAlgorithmUniforms &uniforms [[buffer(0)]],
+                         uint2 tid [[thread_position_in_grid]])
 {
-    PRNG rng(tid.x * tid.y);
-    uint r = rng.lcg();
+    PRNG rng(uniforms.randoms[(tid.x * tid.y) % kRandomAlgorithmUniforms_RandomCount]);
+    uint r = rng.xorShift();
     float x = float(r * (1.0 / float(UINT_MAX))) * 0.5f;
     outTexture.write(x, tid);
 }

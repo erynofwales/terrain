@@ -53,5 +53,15 @@ typedef struct
     matrix_float4x4 modelViewMatrix;
 } Uniforms;
 
+#define kRandomAlgorithmUniforms_RandomCount (41)
+
+typedef struct {
+    uint randoms[kRandomAlgorithmUniforms_RandomCount];
+} RandomAlgorithmUniforms;
+
+#ifndef __METAL_VERSION__
+extern void RandomAlgorithmUniforms_refreshRandoms(RandomAlgorithmUniforms *uniforms);
+#endif
+
 #endif /* ShaderTypes_h */
 

@@ -18,6 +18,7 @@ protocol Algorithm {
     var name: String { get }
     var outTexture: MTLTexture { get }
 
+    func updateUniforms()
     func encode(in encoder: MTLComputeCommandEncoder)
 }
 
@@ -33,6 +34,7 @@ class Kernel {
 
     let pipeline: MTLComputePipelineState
     let textures: [MTLTexture]
+    let uniformBuffer: MTLBuffer?
 
     var outTexture: MTLTexture {
         return textures[textureIndexes.out]
@@ -40,7 +42,7 @@ class Kernel {
 
     private(set) var textureIndexes: (`in`: Int, out: Int) = (in: 0, out: 1)
 
-    init(device: MTLDevice, library: MTLLibrary, functionName: String) throws {
+    init(device: MTLDevice, library: MTLLibrary, functionName: String, uniformBuffer: MTLBuffer? = nil) throws {
         guard let computeFunction = library.makeFunction(name: functionName) else {
             throw KernelError.badFunction
         }
@@ -56,12 +58,15 @@ class Kernel {
             textures.append(tex)
         }
         self.textures = textures
+
+        self.uniformBuffer = uniformBuffer
     }
 
     func encode(in encoder: MTLComputeCommandEncoder) {
         encoder.setComputePipelineState(pipeline)
         encoder.setTexture(textures[textureIndexes.in], index: textureIndexes.in)
         encoder.setTexture(textures[textureIndexes.out], index: textureIndexes.out)
+        encoder.setBuffer(uniformBuffer, offset: 0, index: 0)
         encoder.dispatchThreads(Kernel.textureSize, threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
     }
 }
@@ -78,19 +83,39 @@ class ZeroAlgorithm: Kernel, Algorithm {
             return nil
         }
     }
+
+    // MARK: Algorithm
+
+    func updateUniforms() { }
 }
 
 /// Randomly generate heights that are independent of all others.
 class RandomAlgorithm: Kernel, Algorithm {
     let name = "Random"
 
+    private var uniforms: UnsafeMutablePointer<RandomAlgorithmUniforms>
+
     init?(device: MTLDevice, library: MTLLibrary) {
+        let bufferSize = (MemoryLayout<RandomAlgorithmUniforms>.stride & ~0xFF) + 0x100;
+        guard let buffer = device.makeBuffer(length: bufferSize, options: [.storageModeShared]) else {
+            print("Couldn't create uniform buffer")
+            return nil
+        }
+
+        uniforms = UnsafeMutableRawPointer(buffer.contents()).bindMemory(to: RandomAlgorithmUniforms.self, capacity:1)
+
         do {
-            try super.init(device: device, library: library, functionName: "randomKernel")
+            try super.init(device: device, library: library, functionName: "randomKernel", uniformBuffer: buffer)
         } catch let e {
             print("Couldn't create compute kernel. Error: \(e)")
             return nil
         }
+
+        updateUniforms()
+    }
+
+    func updateUniforms() {
+        RandomAlgorithmUniforms_refreshRandoms(uniforms)
     }
 }
 
