@@ -170,10 +170,13 @@ class Renderer: NSObject, MTKViewDelegate {
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
         
         if let commandBuffer = commandQueue.makeCommandBuffer() {
-            let semaphore = inFlightSemaphore
+            var didScheduleAlgorithmIteration = false
+            let inFlightSem = self.inFlightSemaphore
             commandBuffer.addCompletedHandler { (_ commandBuffer)-> Swift.Void in
-                self.iterateTerrainAlgorithm = false
-                semaphore.signal()
+                if didScheduleAlgorithmIteration && self.iterateTerrainAlgorithm {
+                    self.iterateTerrainAlgorithm = false
+                }
+                inFlightSem.signal()
             }
             
             self.updateDynamicBufferState()
@@ -187,6 +190,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 terrain.algorithm.encode(in: computeEncoder)
                 computeEncoder.popDebugGroup()
                 computeEncoder.endEncoding()
+                didScheduleAlgorithmIteration = true
             }
             
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid
