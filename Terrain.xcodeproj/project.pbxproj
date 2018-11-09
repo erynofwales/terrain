@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C018AD33219518080094BE3C /* Terrain2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD32219518080094BE3C /* Terrain2Tests.swift */; };
 		C019C8512191CE7100EAD5BB /* Uniforms.m in Sources */ = {isa = PBXBuildFile; fileRef = C019C8502191CE7100EAD5BB /* Uniforms.m */; };
 		C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08C589F218F46F000EAFC2D /* Algorithms.swift */; };
 		C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */ = {isa = PBXBuildFile; fileRef = C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */; };
@@ -29,7 +30,20 @@
 		C0C15AC6218E32B3007494E2 /* Terrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15AC5218E32B2007494E2 /* Terrain.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		C018AD35219518080094BE3C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0C15A82218DDD85007494E2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0C15AAF218E2A8F007494E2;
+			remoteInfo = Terrain2;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		C018AD30219518080094BE3C /* Terrain2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Terrain2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C018AD32219518080094BE3C /* Terrain2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Terrain2Tests.swift; sourceTree = "<group>"; };
+		C018AD34219518080094BE3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C019C8502191CE7100EAD5BB /* Uniforms.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Uniforms.m; sourceTree = "<group>"; };
 		C08C589F218F46F000EAFC2D /* Algorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithms.swift; sourceTree = "<group>"; };
 		C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TerrainAlgorithms.metal; sourceTree = "<group>"; };
@@ -60,6 +74,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C018AD2D219518080094BE3C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0C15A87218DDD85007494E2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -79,11 +100,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C018AD31219518080094BE3C /* Terrain2Tests */ = {
+			isa = PBXGroup;
+			children = (
+				C018AD32219518080094BE3C /* Terrain2Tests.swift */,
+				C018AD34219518080094BE3C /* Info.plist */,
+			);
+			path = Terrain2Tests;
+			sourceTree = "<group>";
+		};
 		C0C15A81218DDD85007494E2 = {
 			isa = PBXGroup;
 			children = (
 				C0C15A8C218DDD85007494E2 /* Terrain */,
 				C0C15AB1218E2A90007494E2 /* Terrain2 */,
+				C018AD31219518080094BE3C /* Terrain2Tests */,
 				C0C15A8B218DDD85007494E2 /* Products */,
 				C0C15AA7218E2472007494E2 /* Frameworks */,
 			);
@@ -94,6 +125,7 @@
 			children = (
 				C0C15A8A218DDD85007494E2 /* Terrain.app */,
 				C0C15AB0218E2A8F007494E2 /* Terrain2.app */,
+				C018AD30219518080094BE3C /* Terrain2Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -147,6 +179,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C018AD2F219518080094BE3C /* Terrain2Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C018AD39219518080094BE3C /* Build configuration list for PBXNativeTarget "Terrain2Tests" */;
+			buildPhases = (
+				C018AD2C219518080094BE3C /* Sources */,
+				C018AD2D219518080094BE3C /* Frameworks */,
+				C018AD2E219518080094BE3C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C018AD36219518080094BE3C /* PBXTargetDependency */,
+			);
+			name = Terrain2Tests;
+			productName = Terrain2Tests;
+			productReference = C018AD30219518080094BE3C /* Terrain2Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		C0C15A89218DDD85007494E2 /* Terrain */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C0C15A98218DDD87007494E2 /* Build configuration list for PBXNativeTarget "Terrain" */;
@@ -191,6 +241,10 @@
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Eryn Wells";
 				TargetAttributes = {
+					C018AD2F219518080094BE3C = {
+						CreatedOnToolsVersion = 10.0;
+						TestTargetID = C0C15AAF218E2A8F007494E2;
+					};
 					C0C15A89218DDD85007494E2 = {
 						CreatedOnToolsVersion = 10.0;
 					};
@@ -214,11 +268,19 @@
 			targets = (
 				C0C15A89218DDD85007494E2 /* Terrain */,
 				C0C15AAF218E2A8F007494E2 /* Terrain2 */,
+				C018AD2F219518080094BE3C /* Terrain2Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C018AD2E219518080094BE3C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0C15A88218DDD85007494E2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -240,6 +302,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C018AD2C219518080094BE3C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C018AD33219518080094BE3C /* Terrain2Tests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0C15A86218DDD85007494E2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -270,6 +340,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		C018AD36219518080094BE3C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0C15AAF218E2A8F007494E2 /* Terrain2 */;
+			targetProxy = C018AD35219518080094BE3C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		C0C15A91218DDD87007494E2 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
@@ -290,6 +368,46 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		C018AD37219518080094BE3C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 78372RE6B4;
+				INFOPLIST_FILE = Terrain2Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Terrain2.app/Contents/MacOS/Terrain2";
+			};
+			name = Debug;
+		};
+		C018AD38219518080094BE3C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 78372RE6B4;
+				INFOPLIST_FILE = Terrain2Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Terrain2.app/Contents/MacOS/Terrain2";
+			};
+			name = Release;
+		};
 		C0C15A96218DDD87007494E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -486,6 +604,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C018AD39219518080094BE3C /* Build configuration list for PBXNativeTarget "Terrain2Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C018AD37219518080094BE3C /* Debug */,
+				C018AD38219518080094BE3C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C0C15A85218DDD85007494E2 /* Build configuration list for PBXProject "Terrain" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
