@@ -182,7 +182,7 @@ public class DiamondSquareAlgorithm: Algorithm {
         }
 
         var subdivisions: [Box] {
-            guard size.w > 1 && size.h > 1 else {
+            guard size.w > 2 && size.h > 2 else {
                 return []
             }
             let midp = midpoint
@@ -193,6 +193,15 @@ public class DiamondSquareAlgorithm: Algorithm {
                 Box(origin: (origin.x, origin.y + newSize.h), size: newSize),
                 Box(origin: (origin.x + newSize.w, origin.y + newSize.h), size: newSize)
             ]
+        }
+
+        func breadthFirstSearch(visit: (Box) -> (Void)) {
+            var queue = [self]
+            while queue.count > 0 {
+                let box = queue.removeFirst()
+                visit(box)
+                queue.append(contentsOf: box.subdivisions)
+            }
         }
     }
     
@@ -236,7 +245,7 @@ public class DiamondSquareAlgorithm: Algorithm {
             }
         }
 
-        breadthFirstSearch(ofGridWithSize: size) { (box: Box) in
+        box.breadthFirstSearch { (box: Box) in
             let halfSize = (w: box.size.w / 2 + 1, h: box.size.h / 2 + 1)
 
             // 1. Diamond. Average the corners, add a random value. Set the midpoint.
@@ -279,15 +288,6 @@ public class DiamondSquareAlgorithm: Algorithm {
 
         let region = MTLRegion(origin: MTLOrigin(), size: size)
         texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * size.width)
-    }
-
-    private func breadthFirstSearch(ofGridWithSize size: MTLSize, visit: (Box) -> (Void)) {
-        var queue = [Box(origin: (0, 0), size: (size.width, size.height))]
-        while queue.count > 0 {
-            let box = queue.removeFirst()
-            visit(box)
-            queue.append(contentsOf: box.subdivisions)
-        }
     }
 
     // MARK: Algorithm

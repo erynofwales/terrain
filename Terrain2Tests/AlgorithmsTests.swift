@@ -14,7 +14,43 @@ public typealias Point = DiamondSquareAlgorithm.Box.Point
 public typealias Size = DiamondSquareAlgorithm.Box.Size
 
 class DiamondSquareBFSTests: XCTestCase {
+    func testBFS() {
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
+        var expectedBoxes: [Box] = [
+            box,
+            Box(origin: (x: 3, y: 4), size: (w: 3, h: 3)),
+            Box(origin: (x: 6, y: 4), size: (w: 3, h: 3)),
+            Box(origin: (x: 3, y: 7), size: (w: 3, h: 3)),
+            Box(origin: (x: 6, y: 7), size: (w: 3, h: 3)),
 
+            Box(origin: (x: 3, y: 4), size: (w: 2, h: 2)),
+            Box(origin: (x: 5, y: 4), size: (w: 2, h: 2)),
+            Box(origin: (x: 3, y: 6), size: (w: 2, h: 2)),
+            Box(origin: (x: 5, y: 6), size: (w: 2, h: 2)),
+
+            Box(origin: (x: 6, y: 4), size: (w: 2, h: 2)),
+            Box(origin: (x: 8, y: 4), size: (w: 2, h: 2)),
+            Box(origin: (x: 6, y: 6), size: (w: 2, h: 2)),
+            Box(origin: (x: 8, y: 6), size: (w: 2, h: 2)),
+
+            Box(origin: (x: 3, y: 7), size: (w: 2, h: 2)),
+            Box(origin: (x: 5, y: 7), size: (w: 2, h: 2)),
+            Box(origin: (x: 3, y: 9), size: (w: 2, h: 2)),
+            Box(origin: (x: 5, y: 9), size: (w: 2, h: 2)),
+
+            Box(origin: (x: 6, y: 7), size: (w: 2, h: 2)),
+            Box(origin: (x: 8, y: 7), size: (w: 2, h: 2)),
+            Box(origin: (x: 6, y: 9), size: (w: 2, h: 2)),
+            Box(origin: (x: 8, y: 9), size: (w: 2, h: 2)),
+        ].reversed()
+
+        box.breadthFirstSearch { (box: Box) -> (Void) in
+            let exBox = expectedBoxes.popLast()
+            XCTAssertNotNil(exBox)
+            XCTAssertEqual(box, exBox!)
+        }
+        XCTAssertEqual(expectedBoxes.count, 0)
+    }
 }
 
 class DiamondSquareBoxTests: XCTestCase {
