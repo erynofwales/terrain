@@ -125,7 +125,7 @@ class RandomAlgorithm: Kernel, TerrainGenerator {
 
 /// Implementation of the Diamond-Squares algorithm.
 /// - https://en.wikipedia.org/wiki/Diamond-square_algorithm
-public class DiamondSquareAlgorithm: TerrainGenerator {
+public class DiamondSquareGenerator: TerrainGenerator {
     public struct Point {
         let x: Int
         let y: Int
@@ -304,7 +304,7 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
     let textureSemaphore = DispatchSemaphore(value: 1)
 
     init?(device: MTLDevice) {
-        let size = DiamondSquareAlgorithm.textureSize
+        let size = DiamondSquareGenerator.textureSize
         let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: size.width, height: size.height, mipmapped: false)
         desc.usage = [.shaderRead, .shaderWrite]
         desc.resourceOptions = .storageModeShared
@@ -314,12 +314,12 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
         }
         texture = tex
 
-        algorithm = Algorithm(grid: Box(origin: Point(), size: Size(w: DiamondSquareAlgorithm.textureSize.width, h: DiamondSquareAlgorithm.textureSize.height)))
+        algorithm = Algorithm(grid: Box(origin: Point(), size: Size(w: DiamondSquareGenerator.textureSize.width, h: DiamondSquareGenerator.textureSize.height)))
     }
 
     func render() {
         let heightMap = algorithm.render()
-        let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareAlgorithm.textureSize)
+        let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareGenerator.textureSize)
         texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * size.width)
     }
 
@@ -336,32 +336,32 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
     }
 }
 
-extension DiamondSquareAlgorithm.Point: Equatable {
-    public static func == (lhs: DiamondSquareAlgorithm.Point, rhs: DiamondSquareAlgorithm.Point) -> Bool {
+extension DiamondSquareGenerator.Point: Equatable {
+    public static func == (lhs: DiamondSquareGenerator.Point, rhs: DiamondSquareGenerator.Point) -> Bool {
         return lhs.x == rhs.x && lhs.y == rhs.y
     }
 }
 
-extension DiamondSquareAlgorithm.Point: CustomStringConvertible {
+extension DiamondSquareGenerator.Point: CustomStringConvertible {
     public var description: String {
         return "(x: \(x), y: \(y))"
     }
 }
 
-extension DiamondSquareAlgorithm.Size: Equatable {
-    public static func == (lhs: DiamondSquareAlgorithm.Size, rhs: DiamondSquareAlgorithm.Size) -> Bool {
+extension DiamondSquareGenerator.Size: Equatable {
+    public static func == (lhs: DiamondSquareGenerator.Size, rhs: DiamondSquareGenerator.Size) -> Bool {
         return lhs.w == rhs.w && lhs.h == rhs.h
     }
 }
 
-extension DiamondSquareAlgorithm.Size: CustomStringConvertible {
+extension DiamondSquareGenerator.Size: CustomStringConvertible {
     public var description: String {
         return "(w: \(w), h: \(h))"
     }
 }
 
-extension DiamondSquareAlgorithm.Box: Equatable {
-    public static func == (lhs: DiamondSquareAlgorithm.Box, rhs: DiamondSquareAlgorithm.Box) -> Bool {
+extension DiamondSquareGenerator.Box: Equatable {
+    public static func == (lhs: DiamondSquareGenerator.Box, rhs: DiamondSquareGenerator.Box) -> Bool {
         return lhs.origin == rhs.origin && lhs.size == rhs.size
     }
 }

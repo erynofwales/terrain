@@ -9,15 +9,15 @@
 import XCTest
 @testable import Terrain2
 
-fileprivate typealias Box = DiamondSquareAlgorithm.Box
-fileprivate typealias Point = DiamondSquareAlgorithm.Point
-fileprivate typealias Size = DiamondSquareAlgorithm.Size
+fileprivate typealias Box = DiamondSquareGenerator.Box
+fileprivate typealias Point = DiamondSquareGenerator.Point
+fileprivate typealias Size = DiamondSquareGenerator.Size
 
 class DiamondSquareAlgorithmTests: XCTestCase {
     fileprivate let grid = Box(origin: Point(x: 0, y: 0), size: Size(w: 5, h: 5))
 
     lazy var alg = {
-        DiamondSquareAlgorithm.Algorithm(grid: grid)
+        DiamondSquareGenerator.Algorithm(grid: grid)
     }()
 
     func testPointToIndexConversion() {
