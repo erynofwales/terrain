@@ -11,6 +11,7 @@ import Metal
 
 enum KernelError: Error {
     case badFunction
+    case badSize
     case textureCreationFailed
 }
 
@@ -133,6 +134,10 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
     public struct Size {
         let w: Int
         let h: Int
+
+        var half: Size {
+            return Size(w: w / 2, h: h / 2)
+        }
     }
 
     public struct Box {
@@ -206,6 +211,49 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
             }
         }
     }
+
+    struct Algorithm {
+        let grid: Box
+        private(set) var rng: RandomNumberGenerator
+
+        init(grid: Box, rng: RandomNumberGenerator = SystemRandomNumberGenerator()) {
+            // TODO: Assert log2(w) and log2(h) are integral values.
+            self.grid = grid
+            self.rng = rng
+        }
+
+        /// Run the algorithm and return the genreated height map.
+//        func render() -> [Float] {
+//            var heightMap = [Float](repeating: 0, count: grid.size.w * grid.size.h)
+//            return heightMap
+//        }
+
+        /// Find our diamond's corners, wrapping around the grid if needed.
+        func diamondCorners(forPoint pt: Point, diamondSize: Size) -> [Point] {
+            let halfSize = diamondSize.half
+            let n = Point(x: pt.x, y: pt.y - halfSize.h)
+            let w = Point(x: pt.x - halfSize.w, y: pt.y)
+            let s = Point(x: pt.x, y: pt.y + halfSize.h)
+            let e = Point(x: pt.x + halfSize.w, y: pt.y)
+            return [n, w, s, e].map { (p: Point) -> Point in
+                if p.x < 0 {
+                    return Point(x: p.x + grid.size.w - 1, y: p.y)
+                } else if p.x > grid.size.w {
+                    return Point(x: p.x - grid.size.w + 1, y: p.y)
+                } else if p.y < 0 {
+                    return Point(x: p.x, y: p.y + grid.size.h - 1)
+                } else if p.y > grid.size.h {
+                    return Point(x: p.x, y: p.y - grid.size.h + 1)
+                } else {
+                    return p
+                }
+            }
+        }
+
+        func convert(pointToIndex pt: Point) -> Int {
+            return pt.y * grid.size.w + pt.x
+        }
+    }
     
     let name = "Diamond-Square"
 
@@ -262,21 +310,8 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
 
             // 2. Square. Find the midpoints of the sides of this box. These four points are the origins of the new subdivided boxes.
             for p in box.sideMidpoints {
-                // Find our diamond's corners, wrapping around the grid if needed.
-                let diamondCorners = [
-                    (x: p.x, y: p.y - halfSize.h), // North
-                    (x: p.x - halfSize.w, y: p.y), // West
-                    (x: p.x, y: (p.y + halfSize.h) % size.height), // South
-                    (x: (p.x + halfSize.w) % size.width, y: p.y), // West
-                ].map { (p: Box.Point) -> Box.Point in
-                    if p.x < 0 {
-                        return (x: p.x + size.width, y: p.y)
-                    } else if p.y < 0 {
-                        return (x: p.x, y: p.y + size.height)
-                    } else {
-                        return p
-                    }
-                }
+                // TODO.
+                let diamondCorners = [Point]()
 
                 let idx = ptToIndex(p)
                 let value = Float.random(in: 0...1) + 0.25 * diamondCorners.reduce(0) { (acc, pt) -> Float in
@@ -311,9 +346,21 @@ extension DiamondSquareAlgorithm.Point: Equatable {
     }
 }
 
+extension DiamondSquareAlgorithm.Point: CustomStringConvertible {
+    public var description: String {
+        return "(x: \(x), y: \(y))"
+    }
+}
+
 extension DiamondSquareAlgorithm.Size: Equatable {
     public static func == (lhs: DiamondSquareAlgorithm.Size, rhs: DiamondSquareAlgorithm.Size) -> Bool {
         return lhs.w == rhs.w && lhs.h == rhs.h
+    }
+}
+
+extension DiamondSquareAlgorithm.Size: CustomStringConvertible {
+    public var description: String {
+        return "(w: \(w), h: \(h))"
     }
 }
 

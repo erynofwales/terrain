@@ -9,9 +9,53 @@
 import XCTest
 @testable import Terrain2
 
-public typealias Box = DiamondSquareAlgorithm.Box
-public typealias Point = DiamondSquareAlgorithm.Box.Point
-public typealias Size = DiamondSquareAlgorithm.Box.Size
+fileprivate typealias Box = DiamondSquareAlgorithm.Box
+fileprivate typealias Point = DiamondSquareAlgorithm.Point
+fileprivate typealias Size = DiamondSquareAlgorithm.Size
+
+class DiamondSquareAlgorithmTests: XCTestCase {
+    fileprivate let grid = Box(origin: Point(x: 0, y: 0), size: Size(w: 5, h: 5))
+
+    lazy var alg = {
+        DiamondSquareAlgorithm.Algorithm(grid: grid)
+    }()
+
+    func testDiamondCornersNorth() {
+        let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 0), diamondSize: grid.size)
+        XCTAssertEqual(corners.count, 4)
+        XCTAssertEqual(corners[0], Point(x: 2, y: 2))
+        XCTAssertEqual(corners[1], Point(x: 0, y: 0))
+        XCTAssertEqual(corners[2], Point(x: 2, y: 2))
+        XCTAssertEqual(corners[3], Point(x: 4, y: 0))
+    }
+
+    func testDiamondCornersWest() {
+        let corners = alg.diamondCorners(forPoint: Point(x: 0, y: 2), diamondSize: grid.size)
+        XCTAssertEqual(corners.count, 4)
+        XCTAssertEqual(corners[0], Point(x: 0, y: 0))
+        XCTAssertEqual(corners[1], Point(x: 2, y: 2))
+        XCTAssertEqual(corners[2], Point(x: 0, y: 4))
+        XCTAssertEqual(corners[3], Point(x: 2, y: 2))
+    }
+
+    func testDiamondCornersSouth() {
+        let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 4), diamondSize: grid.size)
+        XCTAssertEqual(corners.count, 4)
+        XCTAssertEqual(corners[0], Point(x: 2, y: 2))
+        XCTAssertEqual(corners[1], Point(x: 0, y: 4))
+        XCTAssertEqual(corners[2], Point(x: 2, y: 2))
+        XCTAssertEqual(corners[3], Point(x: 4, y: 4))
+    }
+
+    func testDiamondCornersEast() {
+        let corners = alg.diamondCorners(forPoint: Point(x: 4, y: 2), diamondSize: grid.size)
+        XCTAssertEqual(corners.count, 4)
+        XCTAssertEqual(corners[0], Point(x: 4, y: 0))
+        XCTAssertEqual(corners[1], Point(x: 2, y: 2))
+        XCTAssertEqual(corners[2], Point(x: 4, y: 4))
+        XCTAssertEqual(corners[3], Point(x: 2, y: 2))
+    }
+}
 
 class DiamondSquareBoxTests: XCTestCase {
     fileprivate let box = Box(origin: Point(x: 3, y: 4), size: Size(w: 5, h: 5))
