@@ -222,11 +222,11 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         func breadthFirstSearch(visit: (Box) -> (Void)) {
-            var queue = [self]
-            while queue.count > 0 {
-                let box = queue.removeFirst()
+            var queue = Queue<Box>()
+            queue.enqueue(item: self)
+            while let box = queue.dequeue() {
                 visit(box)
-                queue.append(contentsOf: box.subdivisions)
+                queue.enqueue(items: box.subdivisions)
             }
         }
     }
