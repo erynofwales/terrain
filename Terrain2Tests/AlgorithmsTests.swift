@@ -20,6 +20,13 @@ class DiamondSquareAlgorithmTests: XCTestCase {
         DiamondSquareAlgorithm.Algorithm(grid: grid)
     }()
 
+    func testPointToIndexConversion() {
+        let idx = alg.convert(pointToIndex: Point(x: 2, y: 2))
+        XCTAssertEqual(idx, 12)
+    }
+
+    // MARK: Diamond Corners
+
     func testDiamondCornersNorth() {
         let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 0), diamondSize: grid.size)
         XCTAssertEqual(corners.count, 4)
