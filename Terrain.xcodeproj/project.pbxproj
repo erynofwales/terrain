@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C018AD33219518080094BE3C /* Terrain2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD32219518080094BE3C /* Terrain2Tests.swift */; };
+		C018AD3B219518480094BE3C /* AlgorithmsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD3A219518480094BE3C /* AlgorithmsTests.swift */; };
 		C019C8512191CE7100EAD5BB /* Uniforms.m in Sources */ = {isa = PBXBuildFile; fileRef = C019C8502191CE7100EAD5BB /* Uniforms.m */; };
 		C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08C589F218F46F000EAFC2D /* Algorithms.swift */; };
 		C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */ = {isa = PBXBuildFile; fileRef = C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */; };
@@ -44,6 +45,7 @@
 		C018AD30219518080094BE3C /* Terrain2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Terrain2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C018AD32219518080094BE3C /* Terrain2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Terrain2Tests.swift; sourceTree = "<group>"; };
 		C018AD34219518080094BE3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C018AD3A219518480094BE3C /* AlgorithmsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmsTests.swift; sourceTree = "<group>"; };
 		C019C8502191CE7100EAD5BB /* Uniforms.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Uniforms.m; sourceTree = "<group>"; };
 		C08C589F218F46F000EAFC2D /* Algorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithms.swift; sourceTree = "<group>"; };
 		C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TerrainAlgorithms.metal; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				C018AD32219518080094BE3C /* Terrain2Tests.swift */,
+				C018AD3A219518480094BE3C /* AlgorithmsTests.swift */,
 				C018AD34219518080094BE3C /* Info.plist */,
 			);
 			path = Terrain2Tests;
@@ -307,6 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C018AD33219518080094BE3C /* Terrain2Tests.swift in Sources */,
+				C018AD3B219518480094BE3C /* AlgorithmsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,9 +376,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 78372RE6B4;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Terrain2Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -383,6 +388,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Terrain2.app/Contents/MacOS/Terrain2";
 			};
@@ -392,9 +398,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 78372RE6B4;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Terrain2Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -403,6 +410,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Terrain2.app/Contents/MacOS/Terrain2";
 			};
@@ -566,9 +574,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Terrain2/Terrain2.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 78372RE6B4;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Terrain2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -576,6 +585,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = Terrain2/ShaderTypes.h;
 				SWIFT_VERSION = 4.2;
 			};
@@ -586,9 +596,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Terrain2/Terrain2.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 78372RE6B4;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Terrain2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -596,6 +607,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = Terrain2/ShaderTypes.h;
 				SWIFT_VERSION = 4.2;
 			};
