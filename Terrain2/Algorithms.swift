@@ -226,18 +226,17 @@ public class DiamondSquareAlgorithm: Algorithm {
         }
 
         var heightMap = [Float](repeating: 0, count: size.width * size.height)
-        var queue: [Box] = [Box(origin: (0, 0), size: (size.width, size.height))]
 
         // 0. Set the corners to initial values if they haven't been set yet.
-        for p in queue.first!.corners {
+        let box = Box(origin: (0, 0), size: (size.width, size.height))
+        for p in box.corners {
             let idx = ptToIndex(p)
             if heightMap[idx] == 0.0 {
                 heightMap[idx] = Float.random(in: 0...1)
             }
         }
 
-        while queue.count > 0 {
-            let box = queue.removeFirst()
+        breadthFirstSearch(ofGridWithSize: size) { (box: Box) in
             let halfSize = (w: box.size.w / 2 + 1, h: box.size.h / 2 + 1)
 
             // 1. Diamond. Average the corners, add a random value. Set the midpoint.
@@ -275,16 +274,6 @@ public class DiamondSquareAlgorithm: Algorithm {
                     return acc + value
                 }
                 heightMap[idx] = value
-            }
-
-            // 3. Base case for this recursion is boxes of size 1. Subdivide this box into 4 and push them onto the queue.
-            if box.size.w > 1 || box.size.h > 1 {
-                let newSize = (w: midpoint.x - box.origin.x, h: midpoint.y - box.origin.y)
-                let newBoxes = [Box(origin: box.origin, size: newSize),
-                                Box(origin: midpoint, size: newSize),
-                                Box(origin: (box.origin.x, box.origin.1 + newSize.1), size: newSize),
-                                Box(origin: (box.origin.x + newSize.w, box.origin.y + newSize.h), size: newSize)]
-                queue.append(contentsOf: newBoxes)
             }
         }
 
