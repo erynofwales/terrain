@@ -129,6 +129,15 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
     public struct Point {
         let x: Int
         let y: Int
+
+        init() {
+            self.init(x: 0, y: 0)
+        }
+
+        init(x: Int, y: Int) {
+            self.x = x
+            self.y = y
+        }
     }
 
     public struct Size {
@@ -223,10 +232,33 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
         }
 
         /// Run the algorithm and return the genreated height map.
-//        func render() -> [Float] {
-//            var heightMap = [Float](repeating: 0, count: grid.size.w * grid.size.h)
-//            return heightMap
-//        }
+        func render() -> [Float] {
+            var heightMap = [Float](repeating: 0, count: grid.size.w * grid.size.h)
+
+            // 0. Set the corners to initial values if they haven't been set yet.
+            for p in grid.corners {
+                let idx = convert(pointToIndex: p)
+                heightMap[idx] = Float.random(in: 0...1)
+            }
+
+            grid.breadthFirstSearch { (box: Box) in
+                // 1. Diamond step. Find the midpoint of the square defined by `box` and set its value.
+                let midpoint = box.midpoint
+                let cornerValues = box.corners.map { heightMap[self.convert(pointToIndex: $0)] }
+                let midpointValue = Float.random(in: 0...1) + self.average(ofPoints: cornerValues)
+                heightMap[convert(pointToIndex: midpoint)] = midpointValue
+
+                // 2. Square step. For each of the side midpoints of this box, compute its value.
+                for pt in box.sideMidpoints {
+                    let corners = diamondCorners(forPoint: pt, diamondSize: box.size)
+                    let cornerValues = corners.map { heightMap[self.convert(pointToIndex: $0)] }
+                    let ptValue = Float.random(in: 0...1) + self.average(ofPoints: cornerValues)
+                    heightMap[convert(pointToIndex: pt)] = ptValue
+                }
+            }
+
+            return heightMap
+        }
 
         /// Find our diamond's corners, wrapping around the grid if needed.
         func diamondCorners(forPoint pt: Point, diamondSize: Size) -> [Point] {
@@ -250,6 +282,11 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
             }
         }
 
+        func average(ofPoints pts: [Float]) -> Float {
+            let scale: Float = 1.0 / Float(pts.count)
+            return scale * pts.reduce(0) { return $0 + $1 }
+        }
+
         func convert(pointToIndex pt: Point) -> Int {
             return pt.y * grid.size.w + pt.x
         }
@@ -262,6 +299,7 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
         return MTLSize(width: 513, height: 513, depth: 1)
     }
 
+    var algorithm: Algorithm
     let texture: MTLTexture
     let textureSemaphore = DispatchSemaphore(value: 1)
 
@@ -275,55 +313,13 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
             return nil
         }
         texture = tex
+
+        algorithm = Algorithm(grid: Box(origin: Point(), size: Size(w: DiamondSquareAlgorithm.textureSize.width, h: DiamondSquareAlgorithm.textureSize.height)))
     }
 
     func render() {
-        let size = DiamondSquareAlgorithm.textureSize
-
-        func ptToIndex(_ pt: Point) -> Int {
-            return pt.y * size.width + pt.x
-        }
-
-        var heightMap = [Float](repeating: 0, count: size.width * size.height)
-
-        // 0. Set the corners to initial values if they haven't been set yet.
-        let box = Box(origin: Point(x: 0, y: 0), size: Size(w: size.width, h: size.height))
-        for p in box.corners {
-            let idx = ptToIndex(p)
-            if heightMap[idx] == 0.0 {
-                heightMap[idx] = Float.random(in: 0...1)
-            }
-        }
-
-        box.breadthFirstSearch { (box: Box) in
-            let halfSize = (w: box.size.w / 2 + 1, h: box.size.h / 2 + 1)
-
-            // 1. Diamond. Average the corners, add a random value. Set the midpoint.
-            let midpoint = box.midpoint
-            let cornerAverage = Float.random(in: 0...1) + 0.25 * box.corners.reduce(0.0) { (acc, pt) -> Float in
-                let index = ptToIndex(pt)
-                let value = heightMap[index]
-                return acc + value
-            }
-            let midptIdx = ptToIndex(midpoint)
-            heightMap[midptIdx] = cornerAverage
-
-            // 2. Square. Find the midpoints of the sides of this box. These four points are the origins of the new subdivided boxes.
-            for p in box.sideMidpoints {
-                // TODO.
-                let diamondCorners = [Point]()
-
-                let idx = ptToIndex(p)
-                let value = Float.random(in: 0...1) + 0.25 * diamondCorners.reduce(0) { (acc, pt) -> Float in
-                    let idx = ptToIndex(pt)
-                    let value = heightMap[idx]
-                    return acc + value
-                }
-                heightMap[idx] = value
-            }
-        }
-
-        let region = MTLRegion(origin: MTLOrigin(), size: size)
+        let heightMap = algorithm.render()
+        let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareAlgorithm.textureSize)
         texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * size.width)
     }
 
