@@ -89,7 +89,7 @@ class Terrain: NSObject {
             return nil
         }
 
-        guard let gen = RandomAlgorithm(device: device, library: library) else {
+        guard let gen = DiamondSquareGenerator(device: device) else {
             print("Couldn't create algorithm")
             return nil
         }
