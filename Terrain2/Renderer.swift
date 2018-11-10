@@ -159,7 +159,12 @@ class Renderer: NSObject, MTKViewDelegate {
     private func updateGameState() {
         /// Update any game state before rendering
         if iterateTerrainAlgorithm {
-            terrain.generator.updateUniforms()
+            if terrain.generator.needsGPU {
+                terrain.generator.updateUniforms()
+            } else {
+                print("Rendering terrain...")
+                terrain.generator.render()
+            }
         }
 
         uniforms[0].projectionMatrix = projectionMatrix
@@ -193,7 +198,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             self.updateGameState()
 
-            if iterateTerrainAlgorithm, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+            if iterateTerrainAlgorithm && !terrain.generator.needsGPU, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
                 print("Scheduling terrain generator iteration with \(terrain.generator.name) algorithm")
                 computeEncoder.label = "Generator Encoder"
                 computeEncoder.pushDebugGroup("Generate Terrain: \(terrain.generator.name)")
