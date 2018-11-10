@@ -75,7 +75,7 @@ class Terrain: NSObject {
     let vertexDescriptor: MTLVertexDescriptor
     let mesh: MTKMesh
 
-    var algorithm: Algorithm
+    var generator: TerrainGenerator
 
     init?(dimensions dim: float2, segments seg: uint2, device: MTLDevice, library: MTLLibrary) {
         dimensions = dim
@@ -89,11 +89,11 @@ class Terrain: NSObject {
             return nil
         }
 
-        guard let alg = RandomAlgorithm(device: device, library: library) else {
+        guard let gen = RandomAlgorithm(device: device, library: library) else {
             print("Couldn't create algorithm")
             return nil
         }
-        algorithm = alg
+        generator = gen
 
         super.init()
     }

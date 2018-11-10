@@ -14,7 +14,7 @@ enum KernelError: Error {
     case textureCreationFailed
 }
 
-protocol Algorithm {
+protocol TerrainGenerator {
     var name: String { get }
     var outTexture: MTLTexture { get }
 
@@ -75,7 +75,7 @@ class Kernel {
 }
 
 /// "Compute" zero for every value of the height map.
-class ZeroAlgorithm: Kernel, Algorithm {
+class ZeroAlgorithm: Kernel, TerrainGenerator {
     let name = "Zero"
 
     init?(device: MTLDevice, library: MTLLibrary) {
@@ -93,7 +93,7 @@ class ZeroAlgorithm: Kernel, Algorithm {
 }
 
 /// Randomly generate heights that are independent of all others.
-class RandomAlgorithm: Kernel, Algorithm {
+class RandomAlgorithm: Kernel, TerrainGenerator {
     let name = "Random"
 
     private var uniforms: UnsafeMutablePointer<RandomAlgorithmUniforms>
@@ -124,7 +124,7 @@ class RandomAlgorithm: Kernel, Algorithm {
 
 /// Implementation of the Diamond-Squares algorithm.
 /// - https://en.wikipedia.org/wiki/Diamond-square_algorithm
-public class DiamondSquareAlgorithm: Algorithm {
+public class DiamondSquareAlgorithm: TerrainGenerator {
     public struct Box {
         public typealias Point = (x: Int, y: Int)
         public typealias Size = (w: Int, h: Int)
