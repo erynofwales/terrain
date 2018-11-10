@@ -254,14 +254,20 @@ public class DiamondSquareGenerator: TerrainGenerator {
             grid.breadthFirstSearch { (box: Box) in
                 // 1. Diamond step. Find the midpoint of the square defined by `box` and set its value.
                 let midpoint = box.midpoint
-                let cornerValues = box.corners.map { heightMap[self.convert(pointToIndex: $0)] }
+                let cornerValues = box.corners.map { (pt: Point) -> Float in
+                    let idx = self.convert(pointToIndex: pt)
+                    return heightMap[idx]
+                }
                 let midpointValue = Float.random(in: 0...1) + self.average(ofPoints: cornerValues)
                 heightMap[convert(pointToIndex: midpoint)] = midpointValue
 
                 // 2. Square step. For each of the side midpoints of this box, compute its value.
                 for pt in box.sideMidpoints {
                     let corners = diamondCorners(forPoint: pt, diamondSize: box.size)
-                    let cornerValues = corners.map { heightMap[self.convert(pointToIndex: $0)] }
+                    let cornerValues = corners.map { (pt: Point) -> Float in
+                        let idx = self.convert(pointToIndex: pt)
+                        return heightMap[idx]
+                    }
                     let ptValue = Float.random(in: 0...1) + self.average(ofPoints: cornerValues)
                     heightMap[convert(pointToIndex: pt)] = ptValue
                 }
