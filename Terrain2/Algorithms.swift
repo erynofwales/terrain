@@ -125,17 +125,19 @@ class RandomAlgorithm: Kernel, TerrainGenerator {
 /// Implementation of the Diamond-Squares algorithm.
 /// - https://en.wikipedia.org/wiki/Diamond-square_algorithm
 public class DiamondSquareAlgorithm: TerrainGenerator {
-    public struct Box {
-        public typealias Point = (x: Int, y: Int)
-        public typealias Size = (w: Int, h: Int)
+    public struct Point {
+        let x: Int
+        let y: Int
+    }
 
+    public struct Size {
+        let w: Int
+        let h: Int
+    }
+
+    public struct Box {
         let origin: Point
         let size: Size
-
-        init(origin o: Point, size s: Size) {
-            origin = o
-            size = s
-        }
 
         var corners: [Point] {
             return [northwest, southwest, northeast, northwest]
@@ -146,19 +148,19 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
         }
 
         var north: Point {
-            return (x: origin.x + (size.w / 2 + 1), y: origin.y)
+            return Point(x: origin.x + (size.w / 2 + 1), y: origin.y)
         }
 
         var west: Point {
-            return (x: origin.x, y: origin.y + (size.h / 2 + 1))
+            return Point(x: origin.x, y: origin.y + (size.h / 2 + 1))
         }
 
         var south: Point {
-            return (x: origin.x + (size.w / 2 + 1), y: origin.y + size.h)
+            return Point(x: origin.x + (size.w / 2 + 1), y: origin.y + size.h)
         }
 
         var east: Point {
-            return (x: origin.x + size.w, y: origin.y + (size.h / 2 + 1))
+            return Point(x: origin.x + size.w, y: origin.y + (size.h / 2 + 1))
         }
 
         var northwest: Point {
@@ -166,19 +168,19 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
         }
 
         var southwest: Point {
-            return (x: origin.x, y: origin.y + size.h)
+            return Point(x: origin.x, y: origin.y + size.h)
         }
 
         var northeast: Point {
-            return (x: origin.x + size.w, y: origin.y)
+            return Point(x: origin.x + size.w, y: origin.y)
         }
 
         var southeast: Point {
-            return (x: origin.x + size.w, y: origin.y + size.h)
+            return Point(x: origin.x + size.w, y: origin.y + size.h)
         }
 
         var midpoint: Point {
-            return (x: origin.x + (size.w / 2 + 1), y: origin.y + (size.h / 2 + 1))
+            return Point(x: origin.x + (size.w / 2 + 1), y: origin.y + (size.h / 2 + 1))
         }
 
         var subdivisions: [Box] {
@@ -186,12 +188,12 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
                 return []
             }
             let midp = midpoint
-            let newSize = (w: midp.x - origin.x, h: midp.y - origin.y)
+            let newSize = Size(w: midp.x - origin.x, h: midp.y - origin.y)
             return [
                 Box(origin: origin, size: newSize),
-                Box(origin: (origin.x + newSize.w, origin.y), size: newSize),
-                Box(origin: (origin.x, origin.y + newSize.h), size: newSize),
-                Box(origin: (origin.x + newSize.w, origin.y + newSize.h), size: newSize)
+                Box(origin: Point(x: origin.x + newSize.w, y: origin.y), size: newSize),
+                Box(origin: Point(x: origin.x, y: origin.y + newSize.h), size: newSize),
+                Box(origin: Point(x: origin.x + newSize.w, y: origin.y + newSize.h), size: newSize)
             ]
         }
 
@@ -230,14 +232,14 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
     func render() {
         let size = DiamondSquareAlgorithm.textureSize
 
-        func ptToIndex(_ pt: Box.Point) -> Int {
+        func ptToIndex(_ pt: Point) -> Int {
             return pt.y * size.width + pt.x
         }
 
         var heightMap = [Float](repeating: 0, count: size.width * size.height)
 
         // 0. Set the corners to initial values if they haven't been set yet.
-        let box = Box(origin: (0, 0), size: (size.width, size.height))
+        let box = Box(origin: Point(x: 0, y: 0), size: Size(w: size.width, h: size.height))
         for p in box.corners {
             let idx = ptToIndex(p)
             if heightMap[idx] == 0.0 {
@@ -300,6 +302,18 @@ public class DiamondSquareAlgorithm: TerrainGenerator {
     }
 
     func updateUniforms() {
+    }
+}
+
+extension DiamondSquareAlgorithm.Point: Equatable {
+    public static func == (lhs: DiamondSquareAlgorithm.Point, rhs: DiamondSquareAlgorithm.Point) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y
+    }
+}
+
+extension DiamondSquareAlgorithm.Size: Equatable {
+    public static func == (lhs: DiamondSquareAlgorithm.Size, rhs: DiamondSquareAlgorithm.Size) -> Bool {
+        return lhs.w == rhs.w && lhs.h == rhs.h
     }
 }
 
