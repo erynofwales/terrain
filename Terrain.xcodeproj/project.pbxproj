@@ -112,6 +112,15 @@
 			path = Terrain2Tests;
 			sourceTree = "<group>";
 		};
+		C018AD3E219728890094BE3C /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				C0C15AB8218E2A90007494E2 /* Shaders.metal */,
+				C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */,
+			);
+			path = Shaders;
+			sourceTree = "<group>";
+		};
 		C0C15A81218DDD85007494E2 = {
 			isa = PBXGroup;
 			children = (
@@ -167,8 +176,7 @@
 				C0C15AB6218E2A90007494E2 /* Renderer.swift */,
 				C0C15AC5218E32B2007494E2 /* Terrain.swift */,
 				C08C589F218F46F000EAFC2D /* Algorithms.swift */,
-				C0C15AB8218E2A90007494E2 /* Shaders.metal */,
-				C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */,
+				C018AD3E219728890094BE3C /* Shaders */,
 				C0C15ABA218E2A90007494E2 /* ShaderTypes.h */,
 				C019C8502191CE7100EAD5BB /* Uniforms.m */,
 				C0C15ABB218E2A90007494E2 /* Assets.xcassets */,
