@@ -17,10 +17,12 @@ enum KernelError: Error {
 
 protocol TerrainGenerator {
     var name: String { get }
+    var needsGPU: Bool { get }
     var outTexture: MTLTexture { get }
 
     func updateUniforms()
     func encode(in encoder: MTLComputeCommandEncoder)
+    func render()
 }
 
 class Kernel {
@@ -79,6 +81,8 @@ class Kernel {
 class ZeroAlgorithm: Kernel, TerrainGenerator {
     let name = "Zero"
 
+    let needsGPU: Bool = true
+
     init?(device: MTLDevice, library: MTLLibrary) {
         do {
             try super.init(device: device, library: library, functionName: "zeroKernel")
@@ -91,11 +95,15 @@ class ZeroAlgorithm: Kernel, TerrainGenerator {
     // MARK: Algorithm
 
     func updateUniforms() { }
+
+    func render() { }
 }
 
 /// Randomly generate heights that are independent of all others.
 class RandomAlgorithm: Kernel, TerrainGenerator {
     let name = "Random"
+
+    let needsGPU: Bool = true
 
     private var uniforms: UnsafeMutablePointer<RandomAlgorithmUniforms>
 
@@ -121,6 +129,8 @@ class RandomAlgorithm: Kernel, TerrainGenerator {
     func updateUniforms() {
         RandomAlgorithmUniforms_refreshRandoms(uniforms)
     }
+
+    func render() { }
 }
 
 /// Implementation of the Diamond-Squares algorithm.
@@ -162,19 +172,19 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         var north: Point {
-            return Point(x: origin.x + (size.w / 2 + 1), y: origin.y)
+            return Point(x: origin.x + size.w / 2, y: origin.y)
         }
 
         var west: Point {
-            return Point(x: origin.x, y: origin.y + (size.h / 2 + 1))
+            return Point(x: origin.x, y: origin.y + size.h / 2)
         }
 
         var south: Point {
-            return Point(x: origin.x + (size.w / 2 + 1), y: origin.y + size.h)
+            return Point(x: origin.x + size.w / 2, y: origin.y + size.h - 1)
         }
 
         var east: Point {
-            return Point(x: origin.x + size.w, y: origin.y + (size.h / 2 + 1))
+            return Point(x: origin.x + size.w - 1, y: origin.y + size.h / 2)
         }
 
         var northwest: Point {
@@ -182,32 +192,32 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         var southwest: Point {
-            return Point(x: origin.x, y: origin.y + size.h)
+            return Point(x: origin.x, y: origin.y + size.h - 1)
         }
 
         var northeast: Point {
-            return Point(x: origin.x + size.w, y: origin.y)
+            return Point(x: origin.x + size.w - 1, y: origin.y)
         }
 
         var southeast: Point {
-            return Point(x: origin.x + size.w, y: origin.y + size.h)
+            return Point(x: origin.x + size.w - 1, y: origin.y + size.h - 1)
         }
 
         var midpoint: Point {
-            return Point(x: origin.x + (size.w / 2 + 1), y: origin.y + (size.h / 2 + 1))
+            return Point(x: origin.x + (size.w / 2), y: origin.y + (size.h / 2))
         }
 
         var subdivisions: [Box] {
             guard size.w > 2 && size.h > 2 else {
                 return []
             }
-            let midp = midpoint
-            let newSize = Size(w: midp.x - origin.x, h: midp.y - origin.y)
+            let halfSize = size.half
+            let newSize = Size(w: halfSize.w + 1, h: halfSize.h + 1)
             return [
                 Box(origin: origin, size: newSize),
-                Box(origin: Point(x: origin.x + newSize.w, y: origin.y), size: newSize),
-                Box(origin: Point(x: origin.x, y: origin.y + newSize.h), size: newSize),
-                Box(origin: Point(x: origin.x + newSize.w, y: origin.y + newSize.h), size: newSize)
+                Box(origin: Point(x: origin.x + halfSize.w, y: origin.y), size: newSize),
+                Box(origin: Point(x: origin.x, y: origin.y + halfSize.h), size: newSize),
+                Box(origin: Point(x: origin.x + halfSize.w, y: origin.y + halfSize.h), size: newSize)
             ]
         }
 
@@ -293,6 +303,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
     }
     
     let name = "Diamond-Square"
+    let needsGPU: Bool = false
 
     class var textureSize: MTLSize {
         // Needs to 2n + 1 on each side.
@@ -307,7 +318,6 @@ public class DiamondSquareGenerator: TerrainGenerator {
         let size = DiamondSquareGenerator.textureSize
         let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: size.width, height: size.height, mipmapped: false)
         desc.usage = [.shaderRead, .shaderWrite]
-        desc.resourceOptions = .storageModeShared
         guard let tex = device.makeTexture(descriptor: desc) else {
             print("Couldn't create texture for Diamond-Squares algorithm.")
             return nil
@@ -320,7 +330,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
     func render() {
         let heightMap = algorithm.render()
         let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareGenerator.textureSize)
-        texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * size.width)
+        texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * DiamondSquareGenerator.textureSize.width)
     }
 
     // MARK: Algorithm
