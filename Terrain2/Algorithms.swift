@@ -286,11 +286,11 @@ public class DiamondSquareGenerator: TerrainGenerator {
             return [n, w, s, e].map { (p: Point) -> Point in
                 if p.x < 0 {
                     return Point(x: p.x + grid.size.w - 1, y: p.y)
-                } else if p.x > grid.size.w {
+                } else if p.x >= grid.size.w {
                     return Point(x: p.x - grid.size.w + 1, y: p.y)
                 } else if p.y < 0 {
                     return Point(x: p.x, y: p.y + grid.size.h - 1)
-                } else if p.y > grid.size.h {
+                } else if p.y >= grid.size.h {
                     return Point(x: p.x, y: p.y - grid.size.h + 1)
                 } else {
                     return p
