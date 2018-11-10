@@ -19,40 +19,35 @@ class DiamondSquareBFSTests: XCTestCase {
 
 class DiamondSquareBoxTests: XCTestCase {
     func testNorthwest() {
-        let box = DiamondSquareAlgorithm.Box(origin: DiamondSquareAlgorithm.Box.Point(x: 3, y: 4),
-                                             size: DiamondSquareAlgorithm.Box.Size(w: 5, h: 5))
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
         let pt = box.northwest
         XCTAssertEqual(pt.x, 3)
         XCTAssertEqual(pt.y, 4)
     }
 
     func testNortheast() {
-        let box = DiamondSquareAlgorithm.Box(origin: DiamondSquareAlgorithm.Box.Point(x: 3, y: 4),
-                                             size: DiamondSquareAlgorithm.Box.Size(w: 5, h: 5))
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
         let pt = box.northeast
         XCTAssertEqual(pt.x, 8)
         XCTAssertEqual(pt.y, 4)
     }
 
     func testSouthwest() {
-        let box = DiamondSquareAlgorithm.Box(origin: DiamondSquareAlgorithm.Box.Point(x: 3, y: 4),
-                                             size: DiamondSquareAlgorithm.Box.Size(w: 5, h: 5))
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
         let pt = box.southwest
         XCTAssertEqual(pt.x, 3)
         XCTAssertEqual(pt.y, 9)
     }
 
     func testSoutheast() {
-        let box = DiamondSquareAlgorithm.Box(origin: DiamondSquareAlgorithm.Box.Point(x: 3, y: 4),
-                                             size: DiamondSquareAlgorithm.Box.Size(w: 5, h: 5))
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
         let pt = box.southeast
         XCTAssertEqual(pt.x, 8)
         XCTAssertEqual(pt.y, 9)
     }
 
     func testMidpoint() {
-        let box = DiamondSquareAlgorithm.Box(origin: DiamondSquareAlgorithm.Box.Point(x: 3, y: 4),
-                                             size: DiamondSquareAlgorithm.Box.Size(w: 5, h: 5))
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
         let midpoint = box.midpoint
         XCTAssertEqual(midpoint.x, 6)
         XCTAssertEqual(midpoint.y, 7)
