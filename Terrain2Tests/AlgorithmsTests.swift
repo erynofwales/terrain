@@ -7,7 +7,15 @@
 //
 
 import XCTest
-import Terrain2
+@testable import Terrain2
+
+public typealias Box = DiamondSquareAlgorithm.Box
+public typealias Point = DiamondSquareAlgorithm.Box.Point
+public typealias Size = DiamondSquareAlgorithm.Box.Size
+
+class DiamondSquareBFSTests: XCTestCase {
+
+}
 
 class DiamondSquareBoxTests: XCTestCase {
     func testNorthwest() {
@@ -48,5 +56,15 @@ class DiamondSquareBoxTests: XCTestCase {
         let midpoint = box.midpoint
         XCTAssertEqual(midpoint.x, 6)
         XCTAssertEqual(midpoint.y, 7)
+    }
+
+    func testSubdivision() {
+        let box = Box(origin: (x: 3, y: 4), size: (w: 5, h: 5))
+        let subdivs = box.subdivisions
+        XCTAssertEqual(subdivs.count, 4)
+        XCTAssertEqual(subdivs[0], Box(origin: (x: 3, y: 4), size: (w: 3, h: 3)))
+        XCTAssertEqual(subdivs[1], Box(origin: (x: 6, y: 4), size: (w: 3, h: 3)))
+        XCTAssertEqual(subdivs[2], Box(origin: (x: 3, y: 7), size: (w: 3, h: 3)))
+        XCTAssertEqual(subdivs[3], Box(origin: (x: 6, y: 7), size: (w: 3, h: 3)))
     }
 }

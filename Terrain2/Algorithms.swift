@@ -132,53 +132,67 @@ public class DiamondSquareAlgorithm: Algorithm {
         let origin: Point
         let size: Size
 
-        public init(origin o: Point, size s: Size) {
+        init(origin o: Point, size s: Size) {
             origin = o
             size = s
         }
 
-        public var corners: [Point] {
+        var corners: [Point] {
             return [northwest, southwest, northeast, northwest]
         }
 
-        public var sideMidpoints: [Point] {
+        var sideMidpoints: [Point] {
             return [north, west, south, east]
         }
 
-        public var north: Point {
+        var north: Point {
             return (x: origin.x + (size.w / 2 + 1), y: origin.y)
         }
 
-        public var west: Point {
+        var west: Point {
             return (x: origin.x, y: origin.y + (size.h / 2 + 1))
         }
 
-        public var south: Point {
+        var south: Point {
             return (x: origin.x + (size.w / 2 + 1), y: origin.y + size.h)
         }
 
-        public var east: Point {
+        var east: Point {
             return (x: origin.x + size.w, y: origin.y + (size.h / 2 + 1))
         }
 
-        public var northwest: Point {
+        var northwest: Point {
             return origin
         }
 
-        public var southwest: Point {
+        var southwest: Point {
             return (x: origin.x, y: origin.y + size.h)
         }
 
-        public var northeast: Point {
+        var northeast: Point {
             return (x: origin.x + size.w, y: origin.y)
         }
 
-        public var southeast: Point {
+        var southeast: Point {
             return (x: origin.x + size.w, y: origin.y + size.h)
         }
 
-        public var midpoint: Point {
+        var midpoint: Point {
             return (x: origin.x + (size.w / 2 + 1), y: origin.y + (size.h / 2 + 1))
+        }
+
+        var subdivisions: [Box] {
+            guard size.w > 1 && size.h > 1 else {
+                return []
+            }
+            let midp = midpoint
+            let newSize = (w: midp.x - origin.x, h: midp.y - origin.y)
+            return [
+                Box(origin: origin, size: newSize),
+                Box(origin: (origin.x + newSize.w, origin.y), size: newSize),
+                Box(origin: (origin.x, origin.y + newSize.h), size: newSize),
+                Box(origin: (origin.x + newSize.w, origin.y + newSize.h), size: newSize)
+            ]
         }
     }
     
@@ -278,6 +292,15 @@ public class DiamondSquareAlgorithm: Algorithm {
         texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * size.width)
     }
 
+    private func breadthFirstSearch(ofGridWithSize size: MTLSize, visit: (Box) -> (Void)) {
+        var queue = [Box(origin: (0, 0), size: (size.width, size.height))]
+        while queue.count > 0 {
+            let box = queue.removeFirst()
+            visit(box)
+            queue.append(contentsOf: box.subdivisions)
+        }
+    }
+
     // MARK: Algorithm
 
     var outTexture: MTLTexture {
@@ -288,6 +311,12 @@ public class DiamondSquareAlgorithm: Algorithm {
     }
 
     func updateUniforms() {
+    }
+}
+
+extension DiamondSquareAlgorithm.Box: Equatable {
+    public static func == (lhs: DiamondSquareAlgorithm.Box, rhs: DiamondSquareAlgorithm.Box) -> Bool {
+        return lhs.origin == rhs.origin && lhs.size == rhs.size
     }
 }
 

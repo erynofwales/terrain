@@ -591,6 +591,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MTL_HEADER_SEARCH_PATHS = Terrain2;
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -613,6 +614,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MTL_HEADER_SEARCH_PATHS = Terrain2;
 				PRODUCT_BUNDLE_IDENTIFIER = me.erynwells.Terrain2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
