@@ -233,12 +233,18 @@ public class DiamondSquareGenerator: TerrainGenerator {
 
     struct Algorithm {
         let grid: Box
-        private(set) var rng: RandomNumberGenerator
 
-        init(grid: Box, rng: RandomNumberGenerator = SystemRandomNumberGenerator()) {
+        var roughness: Float = 1.0 {
+            didSet {
+                randomRange = -roughness...roughness
+            }
+        }
+
+        private var randomRange = Float(0)...Float(1)
+
+        init(grid: Box) {
             // TODO: Assert log2(w) and log2(h) are integral values.
             self.grid = grid
-            self.rng = rng
         }
 
         /// Run the algorithm and return the genreated height map.
@@ -248,7 +254,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
             // 0. Set the corners to initial values if they haven't been set yet.
             for p in grid.corners {
                 let idx = convert(pointToIndex: p)
-                heightMap[idx] = Float.random(in: 0...1)
+                heightMap[idx] = Float.random(in: randomRange)
             }
 
             grid.breadthFirstSearch { (box: Box) in
@@ -258,7 +264,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
                     let idx = self.convert(pointToIndex: pt)
                     return heightMap[idx]
                 }
-                let midpointValue = Float.random(in: 0...1) + self.average(ofPoints: cornerValues)
+                let midpointValue = Float.random(in: randomRange) + self.average(ofPoints: cornerValues)
                 heightMap[convert(pointToIndex: midpoint)] = midpointValue
 
                 // 2. Square step. For each of the side midpoints of this box, compute its value.
@@ -268,7 +274,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
                         let idx = self.convert(pointToIndex: pt)
                         return heightMap[idx]
                     }
-                    let ptValue = Float.random(in: 0...1) + self.average(ofPoints: cornerValues)
+                    let ptValue = Float.random(in: randomRange) + self.average(ofPoints: cornerValues)
                     heightMap[convert(pointToIndex: pt)] = ptValue
                 }
             }
@@ -314,6 +320,12 @@ public class DiamondSquareGenerator: TerrainGenerator {
     class var textureSize: MTLSize {
         // Needs to 2n + 1 on each side.
         return MTLSize(width: 513, height: 513, depth: 1)
+    }
+
+    var roughness: Float = 1.0 {
+        didSet {
+            algorithm.roughness = roughness
+        }
     }
 
     var algorithm: Algorithm

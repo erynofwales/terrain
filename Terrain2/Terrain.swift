@@ -93,6 +93,7 @@ class Terrain: NSObject {
             print("Couldn't create algorithm")
             return nil
         }
+        (gen as DiamondSquareGenerator).roughness = 0.075
         generator = gen
 
         super.init()
