@@ -159,7 +159,7 @@ class Renderer: NSObject, MTKViewDelegate {
     private func updateGameState() {
         /// Update any game state before rendering
         if iterateTerrainAlgorithm {
-            terrain.algorithm.updateUniforms()
+            terrain.generator.updateUniforms()
         }
 
         uniforms[0].projectionMatrix = projectionMatrix
@@ -194,10 +194,10 @@ class Renderer: NSObject, MTKViewDelegate {
             self.updateGameState()
 
             if iterateTerrainAlgorithm, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-                print("Scheduling terrain generator iteration with \(terrain.algorithm.name) algorithm")
+                print("Scheduling terrain generator iteration with \(terrain.generator.name) algorithm")
                 computeEncoder.label = "Generator Encoder"
-                computeEncoder.pushDebugGroup("Generate Terrain: \(terrain.algorithm.name)")
-                terrain.algorithm.encode(in: computeEncoder)
+                computeEncoder.pushDebugGroup("Generate Terrain: \(terrain.generator.name)")
+                terrain.generator.encode(in: computeEncoder)
                 computeEncoder.popDebugGroup()
                 computeEncoder.endEncoding()
                 didScheduleAlgorithmIteration = true
@@ -238,7 +238,7 @@ class Renderer: NSObject, MTKViewDelegate {
                         }
                     }
 
-                    renderEncoder.setVertexTexture(terrain.algorithm.outTexture, index: 0)
+                    renderEncoder.setVertexTexture(terrain.generator.outTexture, index: 0)
                     renderEncoder.setFragmentTexture(colorMap, index: TextureIndex.color.rawValue)
                     
                     for submesh in terrain.mesh.submeshes {
