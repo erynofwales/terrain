@@ -329,18 +329,24 @@ public class DiamondSquareGenerator: TerrainGenerator {
     }
 
     var algorithm: Algorithm
-    let texture: MTLTexture
-    let textureSemaphore = DispatchSemaphore(value: 1)
+    let textures: [MTLTexture]
+    private var activeTexture: Int = 0
 
     init?(device: MTLDevice) {
         let size = DiamondSquareGenerator.textureSize
-        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: size.width, height: size.height, mipmapped: false)
-        desc.usage = [.shaderRead, .shaderWrite]
-        guard let tex = device.makeTexture(descriptor: desc) else {
+        do {
+            textures = try (0..<2).map { (i: Int) -> MTLTexture in
+                let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r32Float, width: size.width, height: size.height, mipmapped: false)
+                desc.usage = [.shaderRead, .shaderWrite]
+                guard let tex = device.makeTexture(descriptor: desc) else {
+                    throw KernelError.textureCreationFailed
+                }
+                return tex
+            }
+        } catch {
             print("Couldn't create texture for Diamond-Squares algorithm.")
             return nil
         }
-        texture = tex
 
         algorithm = Algorithm(grid: Box(origin: Point(), size: Size(w: DiamondSquareGenerator.textureSize.width, h: DiamondSquareGenerator.textureSize.height)))
     }
@@ -348,13 +354,15 @@ public class DiamondSquareGenerator: TerrainGenerator {
     func render() {
         let heightMap = algorithm.render()
         let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareGenerator.textureSize)
-        texture.replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * DiamondSquareGenerator.textureSize.width)
+        let newActiveTexture = (activeTexture + 1) % textures.count
+        textures[newActiveTexture].replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * DiamondSquareGenerator.textureSize.width)
+        activeTexture = newActiveTexture
     }
 
     // MARK: Algorithm
 
     var outTexture: MTLTexture {
-        return texture
+        return textures[activeTexture]
     }
 
     func encode(in encoder: MTLComputeCommandEncoder) {

@@ -34,14 +34,13 @@ class Renderer: NSObject, MTKViewDelegate {
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     let regenerationSemaphore = DispatchSemaphore(value: 1)
 
+    let generatorQueue = DispatchQueue(label: "me.erynwells.Terrain.generatorQueue")
+
     var uniformBufferOffset = 0
-
     var uniformBufferIndex = 0
-
     var uniforms: UnsafeMutablePointer<Uniforms>
 
     var projectionMatrix: matrix_float4x4 = matrix_float4x4()
-
     var rotation: Float = 0
 
     var terrain: Terrain
@@ -142,7 +141,13 @@ class Renderer: NSObject, MTKViewDelegate {
 
     func scheduleAlgorithmIteration() {
         regenerationSemaphore.wait()
-        iterateTerrainAlgorithm = true
+        if !terrain.generator.needsGPU {
+            generatorQueue.async {
+                print("Rendering terrain...")
+                self.terrain.generator.render()
+                print("Rendering terrain...complete!")
+            }
+        }
         regenerationSemaphore.signal()
     }
 
@@ -161,9 +166,6 @@ class Renderer: NSObject, MTKViewDelegate {
         if iterateTerrainAlgorithm {
             if terrain.generator.needsGPU {
                 terrain.generator.updateUniforms()
-            } else {
-                print("Rendering terrain...")
-                terrain.generator.render()
             }
         }
 
@@ -198,7 +200,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             self.updateGameState()
 
-            if iterateTerrainAlgorithm && !terrain.generator.needsGPU, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+            if iterateTerrainAlgorithm && terrain.generator.needsGPU, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
                 print("Scheduling terrain generator iteration with \(terrain.generator.name) algorithm")
                 computeEncoder.label = "Generator Encoder"
                 computeEncoder.pushDebugGroup("Generate Terrain: \(terrain.generator.name)")
