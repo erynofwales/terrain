@@ -19,13 +19,14 @@ using namespace metal;
 typedef struct
 {
     float3 position [[attribute(VertexAttributePosition)]];
+    float3 normal   [[attribute(VertexAttributeNormal)]];
     float2 texCoord [[attribute(VertexAttributeTexcoord)]];
-    uint2 gridCoord [[attribute(VertexAttributeGridCoord)]];
 } Vertex;
 
 typedef struct
 {
     float4 position [[position]];
+    float3 normal;
     float2 texCoord;
 } ColorInOut;
 
@@ -42,6 +43,7 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
     // Replace the y coordinate with the height we read from the texture.
     float4 position(in.position.x, height.r, in.position.z, 1.0);
     out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
+    out.normal = in.normal;
     out.texCoord = in.texCoord;
 
     return out;
