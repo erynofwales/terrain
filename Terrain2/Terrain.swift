@@ -19,25 +19,25 @@ class Terrain: NSObject {
         desc.attributes[VertexAttribute.position.rawValue].offset = 0
         desc.attributes[VertexAttribute.position.rawValue].bufferIndex = BufferIndex.meshPositions.rawValue
 
+        desc.attributes[VertexAttribute.normal.rawValue].format = .float3
+        desc.attributes[VertexAttribute.normal.rawValue].offset = 0
+        desc.attributes[VertexAttribute.normal.rawValue].bufferIndex = BufferIndex.normals.rawValue
+
         desc.attributes[VertexAttribute.texcoord.rawValue].format = .float2
         desc.attributes[VertexAttribute.texcoord.rawValue].offset = 0
         desc.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = BufferIndex.meshGenerics.rawValue
-
-        desc.attributes[VertexAttribute.gridCoord.rawValue].format = .uint2
-        desc.attributes[VertexAttribute.gridCoord.rawValue].offset = 0
-        desc.attributes[VertexAttribute.gridCoord.rawValue].bufferIndex = BufferIndex.meshGridCoords.rawValue
 
         desc.layouts[BufferIndex.meshPositions.rawValue].stride = 12
         desc.layouts[BufferIndex.meshPositions.rawValue].stepRate = 1
         desc.layouts[BufferIndex.meshPositions.rawValue].stepFunction = .perVertex
 
+        desc.layouts[BufferIndex.normals.rawValue].stride = 12
+        desc.layouts[BufferIndex.normals.rawValue].stepRate = 1
+        desc.layouts[BufferIndex.normals.rawValue].stepFunction = .perVertex
+
         desc.layouts[BufferIndex.meshGenerics.rawValue].stride = 8
         desc.layouts[BufferIndex.meshGenerics.rawValue].stepRate = 1
         desc.layouts[BufferIndex.meshGenerics.rawValue].stepFunction = .perVertex
-
-        desc.layouts[BufferIndex.meshGridCoords.rawValue].stride = MemoryLayout<uint2>.stride
-        desc.layouts[BufferIndex.meshGridCoords.rawValue].stepRate = 1
-        desc.layouts[BufferIndex.meshGridCoords.rawValue].stepFunction = .perVertex
 
         return desc
     }
@@ -62,8 +62,8 @@ class Terrain: NSObject {
             throw RendererError.badVertexDescriptor
         }
         attributes[VertexAttribute.position.rawValue].name = MDLVertexAttributePosition
+        attributes[VertexAttribute.normal.rawValue].name = MDLVertexAttributeNormal
         attributes[VertexAttribute.texcoord.rawValue].name = MDLVertexAttributeTextureCoordinate
-        attributes[VertexAttribute.gridCoord.rawValue].name = "Grid Coordinate"
 
         plane.vertexDescriptor = mdlVertexDescriptor
 

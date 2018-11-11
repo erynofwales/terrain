@@ -24,16 +24,16 @@
 typedef NS_ENUM(NSInteger, BufferIndex)
 {
     BufferIndexMeshPositions  = 0,
-    BufferIndexMeshGenerics   = 1,
-    BufferIndexMeshGridCoords = 2,
+    BufferIndexNormals        = 1,
+    BufferIndexMeshGenerics   = 2,
     BufferIndexUniforms       = 3,
 };
 
 typedef NS_ENUM(NSInteger, VertexAttribute)
 {
     VertexAttributePosition  = 0,
-    VertexAttributeTexcoord  = 1,
-    VertexAttributeGridCoord = 2,
+    VertexAttributeNormal    = 1,
+    VertexAttributeTexcoord  = 2,
 };
 
 typedef NS_ENUM(NSInteger, TextureIndex)
