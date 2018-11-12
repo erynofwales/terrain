@@ -46,7 +46,7 @@ private:
 kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTextureIndexIn)]],
                                   constant float2 *texCoords [[buffer(GeneratorBufferIndexTexCoords)]],
                                   constant Uniforms &uniforms [[buffer(GeneratorBufferIndexUniforms)]],
-                                  device float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
+                                  device packed_float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
                                   uint2 tid [[thread_position_in_grid]])
 {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
