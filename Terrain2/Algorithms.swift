@@ -137,8 +137,8 @@ class RandomAlgorithm: Kernel, TerrainGenerator {
 /// - https://en.wikipedia.org/wiki/Diamond-square_algorithm
 public class DiamondSquareGenerator: TerrainGenerator {
     public struct Point {
-        let x: Int
-        let y: Int
+        var x: Int
+        var y: Int
 
         init() {
             self.init(x: 0, y: 0)
@@ -151,8 +151,8 @@ public class DiamondSquareGenerator: TerrainGenerator {
     }
 
     public struct Size {
-        let w: Int
-        let h: Int
+        var w: Int
+        var h: Int
 
         var half: Size {
             return Size(w: w / 2, h: h / 2)
@@ -160,8 +160,8 @@ public class DiamondSquareGenerator: TerrainGenerator {
     }
 
     public struct Box {
-        let origin: Point
-        let size: Size
+        var origin: Point
+        var size: Size
 
         var corners: [Point] {
             return [northwest, southwest, northeast, northwest]
@@ -294,23 +294,22 @@ public class DiamondSquareGenerator: TerrainGenerator {
         /// Find our diamond's corners, wrapping around the grid if needed.
         func diamondCorners(forPoint pt: Point, diamondSize: Size) -> [Point] {
             let halfSize = diamondSize.half
-            let n = Point(x: pt.x, y: pt.y - halfSize.h)
-            let w = Point(x: pt.x - halfSize.w, y: pt.y)
-            let s = Point(x: pt.x, y: pt.y + halfSize.h)
-            let e = Point(x: pt.x + halfSize.w, y: pt.y)
-            return [n, w, s, e].map { (p: Point) -> Point in
-                if p.x < 0 {
-                    return Point(x: p.x + grid.size.w - 1, y: p.y)
-                } else if p.x >= grid.size.w {
-                    return Point(x: p.x - grid.size.w + 1, y: p.y)
-                } else if p.y < 0 {
-                    return Point(x: p.x, y: p.y + grid.size.h - 1)
-                } else if p.y >= grid.size.h {
-                    return Point(x: p.x, y: p.y - grid.size.h + 1)
-                } else {
-                    return p
+            var corners = [Point(x: pt.x, y: pt.y - halfSize.h),
+                           Point(x: pt.x - halfSize.w, y: pt.y),
+                           Point(x: pt.x, y: pt.y + halfSize.h),
+                           Point(x: pt.x + halfSize.w, y: pt.y)]
+            for i in 0..<corners.count {
+                if corners[i].x < 0 {
+                    corners[i].x += grid.size.w - 1
+                } else if corners[i].x >= grid.size.w {
+                    corners[i].x -= grid.size.w - 1
+                } else if corners[i].y < 0 {
+                    corners[i].y += grid.size.h - 1
+                } else if corners[i].y >= grid.size.h {
+                    corners[i].y -= grid.size.h - 1
                 }
             }
+            return corners
         }
 
         func average(ofPoints pts: [Float]) -> Float {
