@@ -13,6 +13,16 @@ fileprivate typealias Box = DiamondSquareGenerator.Box
 fileprivate typealias Point = DiamondSquareGenerator.Point
 fileprivate typealias Size = DiamondSquareGenerator.Size
 
+class DiamondSquareAlgorithmPerformanceTests: XCTestCase {
+    func testAlgorithmOn129() {
+        let box = Box(origin: Point(x: 0, y: 0), size: Size(w: 129, h: 129))
+        let alg = DiamondSquareGenerator.Algorithm(grid: box)
+        measure {
+            _ = alg.queue_render()
+        }
+    }
+}
+
 class DiamondSquareAlgorithmTests: XCTestCase {
     fileprivate let grid = Box(origin: Point(x: 0, y: 0), size: Size(w: 5, h: 5))
 
