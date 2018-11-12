@@ -43,13 +43,42 @@ private:
     uint mSeed;
 };
 
+kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTextureIndexIn)]],
+                                  constant float2 *texCoords [[buffer(GeneratorBufferIndexTexCoords)]],
+                                  constant Uniforms &uniforms [[buffer(GeneratorBufferIndexUniforms)]],
+                                  device float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
+                                  uint2 tid [[thread_position_in_grid]])
+{
+    constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
+
+    const uint vIdx = tid.y * uniforms.terrainSegments.x + tid.x;
+
+    // Get the height from the texture.
+    float2 texCoord = texCoords[vIdx];
+    float4 height = texture.sample(s, texCoord);
+
+    // Update the vertex data.
+    vertexes[vIdx].y = height.r;
+}
+
+kernel void updateGeometryNormals(texture2d<float> texture [[texture(GeneratorTextureIndexIn)]],
+                                  constant float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
+                                  constant float2 *texCoords [[buffer(GeneratorBufferIndexTexCoords)]],
+                                  constant uint *indexes [[buffer(GeneratorBufferIndexIndexes)]],
+                                  constant Uniforms &uniforms [[buffer(GeneratorBufferIndexUniforms)]],
+                                  uint2 tid [[thread_position_in_grid]])
+{
+}
+
+#pragma mark - ZeroGenerator
+
 kernel void zeroKernel(texture2d<float, access::write> outTexture [[texture(GeneratorTextureIndexOut)]],
                        uint2 tid [[thread_position_in_grid]])
 {
     outTexture.write(0, tid);
 }
 
-#pragma mark - RandomAlgorithm
+#pragma mark - RandomGenerator
 
 kernel void randomKernel(texture2d<float, access::write> outTexture [[texture(GeneratorTextureIndexOut)]],
                          constant RandomAlgorithmUniforms &uniforms [[buffer(0)]],

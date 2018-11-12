@@ -19,6 +19,7 @@ let maxBuffersInFlight = 3
 
 enum RendererError: Error {
     case badVertexDescriptor
+    case badComputeFunction
 }
 
 class Renderer: NSObject, MTKViewDelegate {
@@ -30,6 +31,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState
     var depthState: MTLDepthStencilState
     var colorMap: MTLTexture
+
+    var updateGeometryHeightsPipeline: MTLComputePipelineState
 
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     let regenerationSemaphore = DispatchSemaphore(value: 1)
@@ -46,6 +49,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var terrain: Terrain
 
     private var iterateTerrainAlgorithm = true
+    private var didUpdateTerrain = false
 
     init?(metalKitView: MTKView) {
         self.device = metalKitView.device!
@@ -94,6 +98,13 @@ class Renderer: NSObject, MTKViewDelegate {
             return nil
         }
 
+        do {
+            updateGeometryHeightsPipeline = try Renderer.buildUpdateGeometryPipeline(withDevice: device, library: library)
+        } catch {
+            print("Unable to create update geometry pipeline. Error: \(error)")
+            return nil
+        }
+
         super.init()
 
     }
@@ -121,6 +132,13 @@ class Renderer: NSObject, MTKViewDelegate {
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
 
+    class func buildUpdateGeometryPipeline(withDevice device: MTLDevice, library: MTLLibrary) throws -> MTLComputePipelineState {
+        guard let computeFunction = library.makeFunction(name: "updateGeometryHeights") else {
+            throw RendererError.badComputeFunction
+        }
+        return try device.makeComputePipelineState(function: computeFunction)
+    }
+
     class func loadTexture(device: MTLDevice,
                            textureName: String) throws -> MTLTexture {
         /// Load texture data with optimal parameters for sampling
@@ -146,6 +164,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 print("Rendering terrain...")
                 self.terrain.generator.render()
                 print("Rendering terrain...complete!")
+                self.didUpdateTerrain = true
             }
         }
         regenerationSemaphore.signal()
@@ -175,7 +194,10 @@ class Renderer: NSObject, MTKViewDelegate {
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
         let viewMatrix = matrix4x4_translation(0.0, -2.0, -8.0)
         uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
-        rotation += 0.0025
+        rotation += 0.003
+
+        uniforms[0].terrainDimensions = terrain.dimensions
+        uniforms[0].terrainSegments = terrain.segments
     }
 
     func draw(in view: MTKView) {
@@ -191,6 +213,9 @@ class Renderer: NSObject, MTKViewDelegate {
             commandBuffer.addCompletedHandler { (_ commandBuffer)-> Swift.Void in
                 if didScheduleAlgorithmIteration && self.iterateTerrainAlgorithm {
                     self.iterateTerrainAlgorithm = false
+                }
+                if self.didUpdateTerrain {
+                    self.didUpdateTerrain = false
                 }
                 regenSem.signal()
                 inFlightSem.signal()
@@ -208,6 +233,16 @@ class Renderer: NSObject, MTKViewDelegate {
                 computeEncoder.popDebugGroup()
                 computeEncoder.endEncoding()
                 didScheduleAlgorithmIteration = true
+            }
+
+            if didScheduleAlgorithmIteration || didUpdateTerrain, let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+                print("Scheduling update geometry iteration")
+                computeEncoder.label = "Geometry Heights Encoder"
+                computeEncoder.pushDebugGroup("Update Geometry: Heights")
+                computeEncoder.setComputePipelineState(updateGeometryHeightsPipeline)
+                computeEncoder.dispatchThreads(MTLSize(width: Int(terrain.segments.x), height: Int(terrain.segments.y), depth: 1), threadsPerThreadgroup: MTLSize(width: 10, height: 10, depth: 1))
+                computeEncoder.popDebugGroup()
+                computeEncoder.endEncoding()
             }
             
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid

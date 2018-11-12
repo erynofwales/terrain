@@ -41,16 +41,23 @@ typedef NS_ENUM(NSInteger, TextureIndex)
     TextureIndexColor    = 0,
 };
 
-typedef NS_ENUM(NSInteger, GeneratorTextureIndex)
-{
+typedef NS_ENUM(NSInteger, GeneratorBufferIndex) {
+    GeneratorBufferIndexVertexes = 0,
+    GeneratorBufferIndexTexCoords = 1,
+    GeneratorBufferIndexIndexes = 2,
+    GeneratorBufferIndexUniforms = 3,
+};
+
+typedef NS_ENUM(NSInteger, GeneratorTextureIndex) {
     GeneratorTextureIndexIn  = 0,
     GeneratorTextureIndexOut = 1,
 };
 
-typedef struct
-{
+typedef struct {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
+    packed_float2 terrainDimensions;
+    packed_uint2 terrainSegments;
 } Uniforms;
 
 #define kRandomAlgorithmUniforms_RandomCount (41)
