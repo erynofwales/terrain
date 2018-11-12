@@ -48,6 +48,8 @@ class Renderer: NSObject, MTKViewDelegate {
 
     var terrain: Terrain
 
+    var drawLines = true
+
     private var iterateTerrainAlgorithm = true
     private var didUpdateTerrain = false
 
@@ -271,7 +273,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     
                     renderEncoder.setDepthStencilState(depthState)
 
-                    renderEncoder.setTriangleFillMode(.lines)
+                    renderEncoder.setTriangleFillMode(drawLines ? .lines : .fill)
                     
                     renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
                     renderEncoder.setFragmentBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)

@@ -53,11 +53,13 @@ class GameViewController: NSViewController {
     }
 
     override func keyDown(with event: NSEvent) {
-        print("key down: \(String(describing: event.charactersIgnoringModifiers))")
         switch event.charactersIgnoringModifiers {
         case .some("n"):
             renderer.scheduleAlgorithmIteration()
+        case .some("z"):
+            renderer.drawLines = !renderer.drawLines
         default:
+            print("key down: \(String(describing: event.charactersIgnoringModifiers))")
             super.keyDown(with: event)
         }
     }
