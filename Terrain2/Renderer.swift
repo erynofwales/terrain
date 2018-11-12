@@ -38,8 +38,6 @@ class Renderer: NSObject, MTKViewDelegate {
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     let regenerationSemaphore = DispatchSemaphore(value: 1)
 
-    let generatorQueue = DispatchQueue(label: "me.erynwells.Terrain.generatorQueue")
-
     var uniformBufferOffset = 0
     var uniformBufferIndex = 0
     var uniforms: UnsafeMutablePointer<Uniforms>
@@ -171,9 +169,8 @@ class Renderer: NSObject, MTKViewDelegate {
     func scheduleAlgorithmIteration() {
         regenerationSemaphore.wait()
         if !terrain.generator.needsGPU {
-            generatorQueue.async {
-                print("Rendering terrain...")
-                self.terrain.generator.render()
+            print("Rendering terrain...")
+            self.terrain.generator.render {
                 print("Rendering terrain...complete!")
                 self.didUpdateTerrain = true
             }
