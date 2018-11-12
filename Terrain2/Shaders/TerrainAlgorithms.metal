@@ -61,13 +61,16 @@ kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTe
     vertexes[vIdx].y = height.r;
 }
 
-kernel void updateGeometryNormals(texture2d<float> texture [[texture(GeneratorTextureIndexIn)]],
-                                  constant float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
-                                  constant float2 *texCoords [[buffer(GeneratorBufferIndexTexCoords)]],
-                                  constant uint *indexes [[buffer(GeneratorBufferIndexIndexes)]],
-                                  constant Uniforms &uniforms [[buffer(GeneratorBufferIndexUniforms)]],
-                                  uint2 tid [[thread_position_in_grid]])
+kernel void updateGeometryNormals(constant float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
+                                  constant packed_uint3 *indexes [[buffer(GeneratorBufferIndexIndexes)]],
+                                  device packed_float3 *normals [[buffer(GeneratorBufferIndexNormals)]],
+                                  uint tid [[thread_position_in_grid]])
 {
+    const uint3 triIdx = indexes[tid];
+    float3 side1(vertexes[triIdx.y] - vertexes[triIdx.x]);
+    float3 side2(vertexes[triIdx.y] - vertexes[triIdx.z]);
+    float3 normal(normalize(cross(side1, side2)));
+    normals[tid] = normal;
 }
 
 #pragma mark - ZeroGenerator
