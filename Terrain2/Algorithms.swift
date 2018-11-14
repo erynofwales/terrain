@@ -334,7 +334,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
 
     class var textureSize: MTLSize {
         // Needs to 2n + 1 on each side.
-        return MTLSize(width: 513, height: 513, depth: 1)
+        return MTLSize(width: 129, height: 129, depth: 1)
     }
 
     var roughness: Float = 1.0 {
