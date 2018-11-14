@@ -8,6 +8,9 @@
 
 import Foundation
 import Metal
+import os
+
+let Log = OSLog(subsystem: "me.erynwells.Terrain2.Algorithms", category: "DiamondSquare")
 
 enum KernelError: Error {
     case badFunction
@@ -258,6 +261,8 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         func queue_render() -> [Float] {
+            os_signpost(.begin, log: Log, name: "DiamondSquare.render")
+
             var heightMap = [Float](repeating: 0, count: grid.size.w * grid.size.h)
 
             // 0. Set the corners to initial values if they haven't been set yet.
@@ -288,6 +293,8 @@ public class DiamondSquareGenerator: TerrainGenerator {
                 }
             }
 
+            os_signpost(.end, log: Log, name: "DiamondSquare.render")
+            
             return heightMap
         }
 
