@@ -248,19 +248,19 @@ class Renderer: NSObject, MTKViewDelegate {
 
             if didScheduleAlgorithmIteration || needsGeometryUpdate {
                 if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-                print("Scheduling update geometry heights")
-                computeEncoder.label = "Geometry Heights Encoder"
-                computeEncoder.pushDebugGroup("Update Geometry: Heights")
-                computeEncoder.setComputePipelineState(updateGeometryHeightsPipeline)
-                computeEncoder.setTexture(terrain.generator.outTexture, index: GeneratorTextureIndex.in.rawValue)
-                let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-                computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.vertexes.rawValue)
-                let texCoordBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
-                computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: GeneratorBufferIndex.texCoords.rawValue)
-                computeEncoder.setBuffer(dynamicUniformBuffer, offset: uniformBufferOffset, index: GeneratorBufferIndex.uniforms.rawValue)
-                computeEncoder.dispatchThreads(MTLSize(width: Int(terrain.segments.x + 1), height: Int(terrain.segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
-                computeEncoder.popDebugGroup()
-                computeEncoder.endEncoding()
+                    print("Scheduling update geometry heights")
+                    computeEncoder.label = "Geometry Heights Encoder"
+                    computeEncoder.pushDebugGroup("Update Geometry: Heights")
+                    computeEncoder.setComputePipelineState(updateGeometryHeightsPipeline)
+                    computeEncoder.setTexture(terrain.generator.outTexture, index: GeneratorTextureIndex.in.rawValue)
+                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+                    computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.vertexes.rawValue)
+                    let texCoordBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
+                    computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: GeneratorBufferIndex.texCoords.rawValue)
+                    computeEncoder.setBuffer(dynamicUniformBuffer, offset: uniformBufferOffset, index: GeneratorBufferIndex.uniforms.rawValue)
+                    computeEncoder.dispatchThreads(MTLSize(width: Int(terrain.segments.x + 1), height: Int(terrain.segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+                    computeEncoder.popDebugGroup()
+                    computeEncoder.endEncoding()
                 }
 
                 if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
