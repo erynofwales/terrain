@@ -35,9 +35,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var depthState: MTLDepthStencilState
     var colorMap: MTLTexture
 
-    let updateGeometryHeightsPipeline: MTLComputePipelineState
-    let updateGeometryNormalsPipeline: MTLComputePipelineState
-
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     let regenerationSemaphore = DispatchSemaphore(value: 1)
 
@@ -102,14 +99,6 @@ class Renderer: NSObject, MTKViewDelegate {
             return nil
         }
 
-        do {
-            updateGeometryHeightsPipeline = try Renderer.buildUpdateGeometryHeightsPipeline(withDevice: device, library: library)
-            updateGeometryNormalsPipeline = try Renderer.buildUpdateGeometryNormalsPipeline(withDevice: device, library: library)
-        } catch {
-            print("Unable to create update geometry pipeline. Error: \(error)")
-            return nil
-        }
-
         super.init()
     }
 
@@ -134,13 +123,6 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineDescriptor.stencilAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
 
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
-    }
-
-    class func buildUpdateGeometryHeightsPipeline(withDevice device: MTLDevice, library: MTLLibrary) throws -> MTLComputePipelineState {
-        guard let computeFunction = library.makeFunction(name: "updateGeometryHeights") else {
-            throw RendererError.badComputeFunction
-        }
-        return try device.makeComputePipelineState(function: computeFunction)
     }
 
     class func buildUpdateGeometryNormalsPipeline(withDevice device: MTLDevice, library: MTLLibrary) throws -> MTLComputePipelineState {
@@ -249,37 +231,7 @@ class Renderer: NSObject, MTKViewDelegate {
             }
 
             if didScheduleAlgorithmIteration || needsGeometryUpdate {
-                if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-                    print("Scheduling update geometry heights")
-                    computeEncoder.label = "Geometry Heights Encoder"
-                    computeEncoder.pushDebugGroup("Update Geometry: Heights")
-                    computeEncoder.setComputePipelineState(updateGeometryHeightsPipeline)
-                    computeEncoder.setTexture(terrain.generator.outTexture, index: GeneratorTextureIndex.in.rawValue)
-                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-                    computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.vertexes.rawValue)
-                    let texCoordBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
-                    computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: GeneratorBufferIndex.texCoords.rawValue)
-                    computeEncoder.setBuffer(dynamicUniformBuffer, offset: uniformBufferOffset, index: GeneratorBufferIndex.uniforms.rawValue)
-                    computeEncoder.dispatchThreads(MTLSize(width: Int(terrain.segments.x + 1), height: Int(terrain.segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
-                    computeEncoder.popDebugGroup()
-                    computeEncoder.endEncoding()
-                }
-
-                if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-                    print("Scheduling update geometry normals")
-                    computeEncoder.label = "Geometry Normals Encoder"
-                    computeEncoder.pushDebugGroup("Update Geometry: Normals")
-                    computeEncoder.setComputePipelineState(updateGeometryNormalsPipeline)
-                    let indexBuffer = terrain.mesh.submeshes[0].indexBuffer
-                    computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
-                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-                    computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.vertexes.rawValue)
-                    let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
-                    computeEncoder.setBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: GeneratorBufferIndex.normals.rawValue)
-                    computeEncoder.dispatchThreads(MTLSize(width: terrain.mesh.vertexCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
-                    computeEncoder.popDebugGroup()
-                    computeEncoder.endEncoding()
-                }
+                terrain.scheduleGeometryUpdates(inCommandBuffer: commandBuffer, uniforms: dynamicUniformBuffer, uniformsOffset: uniformBufferOffset)
             }
             
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid

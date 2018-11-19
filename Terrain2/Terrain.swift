@@ -141,4 +141,38 @@ class Terrain: NSObject {
         }
         return progress
     }
+
+    func scheduleGeometryUpdates(inCommandBuffer commandBuffer: MTLCommandBuffer, uniforms: MTLBuffer, uniformsOffset: Int) {
+        if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+            print("Scheduling update geometry heights")
+            computeEncoder.label = "Geometry Heights Encoder"
+            computeEncoder.pushDebugGroup("Update Geometry: Heights")
+            computeEncoder.setComputePipelineState(updateHeightsPipeline)
+            computeEncoder.setTexture(generator.outTexture, index: GeneratorTextureIndex.in.rawValue)
+            let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
+            let texCoordBuffer = mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
+            computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: BufferIndex.texCoords.rawValue)
+            computeEncoder.setBuffer(uniforms, offset: uniformsOffset, index: BufferIndex.uniforms.rawValue)
+            computeEncoder.dispatchThreads(MTLSize(width: Int(segments.x + 1), height: Int(segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+            computeEncoder.popDebugGroup()
+            computeEncoder.endEncoding()
+        }
+
+        if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+            print("Scheduling update geometry normals")
+            computeEncoder.label = "Surface Normals Encoder"
+            computeEncoder.pushDebugGroup("Update Geometry: Surface Normals")
+            computeEncoder.setComputePipelineState(updateSurfaceNormalsPipeline)
+            let indexBuffer = mesh.submeshes[0].indexBuffer
+            computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
+            let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
+            let normalBuffer = mesh.vertexBuffers[BufferIndex.faceNormals.rawValue]
+            computeEncoder.setBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: BufferIndex.faceNormals.rawValue)
+            computeEncoder.dispatchThreads(MTLSize(width: mesh.vertexCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
+            computeEncoder.popDebugGroup()
+            computeEncoder.endEncoding()
+        }
+    }
 }
