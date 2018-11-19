@@ -17,6 +17,9 @@ let alignedUniformsSize = (MemoryLayout<Uniforms>.size & ~0xFF) + 0x100
 
 let maxBuffersInFlight = 3
 
+let terrainDimensions = float2(10, 10)
+let terrainSegments = uint2(5, 5)
+
 enum RendererError: Error {
     case badVertexDescriptor
     case badComputeFunction
@@ -75,7 +78,7 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         self.library = library
 
-        terrain = Terrain(dimensions: float2(10, 10), segments: uint2(100, 100), device: device, library: library)!
+        terrain = Terrain(dimensions: terrainDimensions, segments: terrainSegments, device: device, library: library)!
 
         do {
             pipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
@@ -108,7 +111,6 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         super.init()
-
     }
 
     class func buildRenderPipelineWithDevice(device: MTLDevice,
