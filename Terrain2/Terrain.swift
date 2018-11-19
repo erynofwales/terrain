@@ -113,7 +113,7 @@ class Terrain: NSObject {
         do {
             updateHeightsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryHeights", device: device, library: library)
             updateSurfaceNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryNormals", device: device, library: library)
-            updateVertexNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryVertexNormals", device: device, library: library)
+//            updateVertexNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryVertexNormals", device: device, library: library)
         } catch {
             print("Unable to create compute pipelines for terrain geometry updates. Error: \(error)")
             return nil
@@ -123,18 +123,16 @@ class Terrain: NSObject {
     }
 
     func generate(completion: @escaping () -> Void) -> Progress {
-        let progress = Progress(totalUnitCount: 3)
+        let progress = Progress(totalUnitCount: 1)
         generatorQueue.async {
-            progress.becomeCurrent(withPendingUnitCount: 3)
+            progress.becomeCurrent(withPendingUnitCount: 1)
 
-            let heights = self.generator.render(progress: progress)
+            let _ = self.generator.render(progress: progress)
             progress.completedUnitCount += 1
 
             // TODO: Store heights
-            progress.completedUnitCount += 1
 
             // TODO: Compute normals
-            progress.completedUnitCount += 1
 
             progress.resignCurrent()
             completion()
