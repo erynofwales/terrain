@@ -23,9 +23,9 @@ class Terrain: NSObject {
         desc.attributes[VertexAttribute.normal.rawValue].offset = 0
         desc.attributes[VertexAttribute.normal.rawValue].bufferIndex = BufferIndex.normals.rawValue
 
-        desc.attributes[VertexAttribute.texcoord.rawValue].format = .float2
-        desc.attributes[VertexAttribute.texcoord.rawValue].offset = 0
-        desc.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = BufferIndex.meshGenerics.rawValue
+        desc.attributes[VertexAttribute.texCoord.rawValue].format = .float2
+        desc.attributes[VertexAttribute.texCoord.rawValue].offset = 0
+        desc.attributes[VertexAttribute.texCoord.rawValue].bufferIndex = BufferIndex.meshGenerics.rawValue
 
         desc.layouts[BufferIndex.meshPositions.rawValue].stride = 12
         desc.layouts[BufferIndex.meshPositions.rawValue].stepRate = 1
@@ -63,7 +63,7 @@ class Terrain: NSObject {
         }
         attributes[VertexAttribute.position.rawValue].name = MDLVertexAttributePosition
         attributes[VertexAttribute.normal.rawValue].name = MDLVertexAttributeNormal
-        attributes[VertexAttribute.texcoord.rawValue].name = MDLVertexAttributeTextureCoordinate
+        attributes[VertexAttribute.texCoord.rawValue].name = MDLVertexAttributeTextureCoordinate
 
         plane.vertexDescriptor = mdlVertexDescriptor
 
@@ -82,8 +82,7 @@ class Terrain: NSObject {
 
     private let updateHeightsPipeline: MTLComputePipelineState
     private let updateSurfaceNormalsPipeline: MTLComputePipelineState
-    private let updateVertexNormalsPipeline: MTLComputePipelineState
-    
+
     let dimensions: float2
     let segments: uint2
     let vertexDescriptor: MTLVertexDescriptor
@@ -113,7 +112,6 @@ class Terrain: NSObject {
         do {
             updateHeightsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryHeights", device: device, library: library)
             updateSurfaceNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryNormals", device: device, library: library)
-//            updateVertexNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryVertexNormals", device: device, library: library)
         } catch {
             print("Unable to create compute pipelines for terrain geometry updates. Error: \(error)")
             return nil
@@ -148,10 +146,10 @@ class Terrain: NSObject {
             computeEncoder.setComputePipelineState(updateHeightsPipeline)
             computeEncoder.setTexture(generator.outTexture, index: GeneratorTextureIndex.in.rawValue)
             let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
+            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
             let texCoordBuffer = mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
-            computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: BufferIndex.texCoords.rawValue)
-            computeEncoder.setBuffer(uniforms, offset: uniformsOffset, index: BufferIndex.uniforms.rawValue)
+            computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: GeneratorBufferIndex.texCoords.rawValue)
+            computeEncoder.setBuffer(uniforms, offset: uniformsOffset, index: GeneratorBufferIndex.uniforms.rawValue)
             computeEncoder.dispatchThreads(MTLSize(width: Int(segments.x + 1), height: Int(segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
@@ -163,11 +161,11 @@ class Terrain: NSObject {
             computeEncoder.pushDebugGroup("Update Geometry: Surface Normals")
             computeEncoder.setComputePipelineState(updateSurfaceNormalsPipeline)
             let indexBuffer = mesh.submeshes[0].indexBuffer
-            computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
+            computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
             let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
-            let normalBuffer = mesh.vertexBuffers[BufferIndex.faceNormals.rawValue]
-            computeEncoder.setBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: BufferIndex.faceNormals.rawValue)
+            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
+//            let normalBuffer = mesh.vertexBuffers[BufferIndex.faceNormals.rawValue]
+//            computeEncoder.setBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: BufferIndex.faceNormals.rawValue)
             computeEncoder.dispatchThreads(MTLSize(width: mesh.vertexCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()

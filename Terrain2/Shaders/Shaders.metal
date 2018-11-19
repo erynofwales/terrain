@@ -20,7 +20,7 @@ typedef struct
 {
     float3 position [[attribute(VertexAttributePosition)]];
     float3 normal   [[attribute(VertexAttributeNormal)]];
-    float2 texCoord [[attribute(VertexAttributeTexcoord)]];
+    float2 texCoord [[attribute(VertexAttributeTexCoord)]];
 } Vertex;
 
 typedef struct
@@ -65,17 +65,19 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
 
 #pragma mark - Normal Shaders
 
-vertex float4 normalVertexShader(constant float3 *positions [[buffer(BufferIndexMeshPositions)]],
-                                 constant float3 *normals [[buffer(BufferIndexNormals)]],
+vertex float4 normalVertexShader(constant packed_float3 *positions [[buffer(BufferIndexMeshPositions)]],
+                                 constant packed_float3 *normals [[buffer(BufferIndexNormals)]],
+                                 constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]],
                                  uint instID [[instance_id]],
                                  uint vertID [[vertex_id]])
 {
-    float3 out = positions[instID];
+    float3 v = positions[instID];
     if ( vertID == 1 )
     {
-        out += normals[instID];
+        v += normals[instID];
     }
-    return float4(out, 1.0);
+    float4 out = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v, 1.0);
+    return out;
 }
 
 fragment half4 normalFragmentShader()

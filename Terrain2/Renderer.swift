@@ -32,6 +32,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var dynamicUniformBuffer: MTLBuffer
     var pipelineState: MTLRenderPipelineState
+    var normalPipelineState: MTLRenderPipelineState
     var depthState: MTLDepthStencilState
     var colorMap: MTLTexture
 
@@ -82,6 +83,7 @@ class Renderer: NSObject, MTKViewDelegate {
                                                                        library: library,
                                                                        metalKitView: metalKitView,
                                                                        mtlVertexDescriptor: terrain.vertexDescriptor)
+            normalPipelineState = try Renderer.buildNormalRenderPipeline(withDevice: device, library: library, view: metalKitView)
         } catch {
             print("Unable to compile render pipeline state.  Error info: \(error)")
             return nil
@@ -112,7 +114,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let fragmentFunction = library.makeFunction(name: "fragmentShader")
 
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.label = "RenderPipeline"
+        pipelineDescriptor.label = "Geometry Render Pipeline"
         pipelineDescriptor.sampleCount = metalKitView.sampleCount
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
@@ -121,6 +123,23 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineDescriptor.colorAttachments[0].pixelFormat = metalKitView.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
         pipelineDescriptor.stencilAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
+
+        return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+    }
+
+    class func buildNormalRenderPipeline(withDevice device: MTLDevice, library: MTLLibrary, view: MTKView) throws -> MTLRenderPipelineState {
+        let vertexFunction = library.makeFunction(name: "normalVertexShader")
+        let fragmentFunction = library.makeFunction(name: "normalFragmentShader")
+
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.label = "Normal Render Pipeline"
+        pipelineDescriptor.sampleCount = view.sampleCount
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+
+        pipelineDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
+        pipelineDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat
+        pipelineDescriptor.stencilAttachmentPixelFormat = view.depthStencilPixelFormat
 
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
@@ -242,7 +261,6 @@ class Renderer: NSObject, MTKViewDelegate {
                 /// Final pass rendering code here
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                     renderEncoder.label = "Primary Render Encoder"
-                    
                     renderEncoder.pushDebugGroup("Draw Plane")
                     
                     renderEncoder.setCullMode(.none)
@@ -281,12 +299,35 @@ class Renderer: NSObject, MTKViewDelegate {
                     }
                     
                     renderEncoder.popDebugGroup()
-                    
                     renderEncoder.endEncoding()
-                    
-                    if let drawable = view.currentDrawable {
-                        commandBuffer.present(drawable)
-                    }
+                }
+
+                let normalsRenderPassDescriptor = renderPassDescriptor.copy() as! MTLRenderPassDescriptor
+                normalsRenderPassDescriptor.colorAttachments[0].loadAction = .load
+                normalsRenderPassDescriptor.colorAttachments[0].storeAction = .store
+
+                if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: normalsRenderPassDescriptor) {
+                    renderEncoder.label = "Normals Render Encoder"
+                    renderEncoder.pushDebugGroup("Draw Normals")
+
+                    renderEncoder.setRenderPipelineState(normalPipelineState)
+                    renderEncoder.setDepthStencilState(depthState)
+
+                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+                    renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
+                    let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
+                    renderEncoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: BufferIndex.normals.rawValue)
+
+                    renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
+
+                    renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: terrain.mesh.vertexCount)
+
+                    renderEncoder.popDebugGroup()
+                    renderEncoder.endEncoding()
+                }
+
+                if let drawable = view.currentDrawable {
+                    commandBuffer.present(drawable)
                 }
             }
             

@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, VertexAttribute)
 {
     VertexAttributePosition  = 0,
     VertexAttributeNormal    = 1,
-    VertexAttributeTexcoord  = 2,
+    VertexAttributeTexCoord  = 2,
 };
 
 typedef NS_ENUM(NSInteger, TextureIndex)
@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, TextureIndex)
 };
 
 typedef NS_ENUM(NSInteger, GeneratorBufferIndex) {
-    GeneratorBufferIndexVertexes = 0,
+    GeneratorBufferIndexMeshPositions = 0,
     GeneratorBufferIndexTexCoords = 1,
     GeneratorBufferIndexIndexes = 2,
     GeneratorBufferIndexNormals = 3,
