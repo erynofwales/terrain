@@ -30,6 +30,8 @@ typedef struct
     float2 texCoord;
 } ColorInOut;
 
+#pragma mark - Geometry Shaders
+
 vertex ColorInOut vertexShader(Vertex in [[stage_in]],
                                texture2d<float> heights [[texture(0)]],
                                constant Uniforms & uniforms [[buffer(BufferIndexUniforms)]])
@@ -59,4 +61,24 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
     half4 colorSample   = colorMap.sample(colorSampler, in.texCoord.xy);
 
     return float4(1.0);
+}
+
+#pragma mark - Normal Shaders
+
+vertex float4 normalVertexShader(constant float3 *positions [[buffer(BufferIndexMeshPositions)]],
+                                 constant float3 *normals [[buffer(BufferIndexNormals)]],
+                                 uint instID [[instance_id]],
+                                 uint vertID [[vertex_id]])
+{
+    float3 out = positions[instID];
+    if ( vertID == 1 )
+    {
+        out += normals[instID];
+    }
+    return float4(out, 1.0);
+}
+
+fragment half4 normalFragmentShader()
+{
+    return half4(0.0, 0.0, 1.0, 1.0);
 }
