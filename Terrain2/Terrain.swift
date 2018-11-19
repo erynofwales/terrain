@@ -69,6 +69,20 @@ class Terrain: NSObject {
 
         return try MTKMesh(mesh:plane, device:device)
     }
+
+    class func computePipeline(withFunctionNamed name: String, device: MTLDevice, library: MTLLibrary) throws -> MTLComputePipelineState {
+        guard let function = library.makeFunction(name: name) else {
+            throw RendererError.badComputeFunction
+        }
+        let pipeline = try device.makeComputePipelineState(function: function)
+        return pipeline
+    }
+
+    private let generatorQueue = DispatchQueue(label: "Terrain Generation Queue")
+
+    private let updateHeightsPipeline: MTLComputePipelineState
+    private let updateSurfaceNormalsPipeline: MTLComputePipelineState
+    private let updateVertexNormalsPipeline: MTLComputePipelineState
     
     let dimensions: float2
     let segments: uint2
@@ -96,6 +110,35 @@ class Terrain: NSObject {
         (gen as DiamondSquareGenerator).roughness = 0.075
         generator = gen
 
+        do {
+            updateHeightsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryHeights", device: device, library: library)
+            updateSurfaceNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryNormals", device: device, library: library)
+            updateVertexNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryVertexNormals", device: device, library: library)
+        } catch {
+            print("Unable to create compute pipelines for terrain geometry updates. Error: \(error)")
+            return nil
+        }
+
         super.init()
+    }
+
+    func generate(completion: @escaping () -> Void) -> Progress {
+        let progress = Progress(totalUnitCount: 3)
+        generatorQueue.async {
+            progress.becomeCurrent(withPendingUnitCount: 3)
+
+            let heights = self.generator.render(progress: progress)
+            progress.completedUnitCount += 1
+
+            // TODO: Store heights
+            progress.completedUnitCount += 1
+
+            // TODO: Compute normals
+            progress.completedUnitCount += 1
+
+            progress.resignCurrent()
+            completion()
+        }
+        return progress
     }
 }

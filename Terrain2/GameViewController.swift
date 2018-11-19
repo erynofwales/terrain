@@ -14,6 +14,9 @@ class GameViewController: NSViewController {
 
     var renderer: Renderer!
     var mtkView: MTKView!
+    var progressIndicator: NSProgressIndicator!
+
+    private var progressObservation: NSKeyValueObservation?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +44,17 @@ class GameViewController: NSViewController {
         renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
 
         mtkView.delegate = renderer
+
+        progressIndicator = NSProgressIndicator()
+        progressIndicator.isIndeterminate = false
+        progressIndicator.minValue = 0.0
+        progressIndicator.maxValue = 1.0
+        self.view.addSubview(progressIndicator)
+        progressIndicator.translatesAutoresizingMaskIntoConstraints = false
+        progressIndicator.widthAnchor.constraint(equalToConstant: 200.0).isActive = true
+        progressIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        progressIndicator.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40.0).isActive = true
+        progressIndicator.isHidden = true
     }
 
     override func viewWillAppear() {
@@ -55,7 +69,23 @@ class GameViewController: NSViewController {
     override func keyDown(with event: NSEvent) {
         switch event.charactersIgnoringModifiers {
         case .some("n"):
-            renderer.scheduleAlgorithmIteration()
+            if let progress = renderer.scheduleAlgorithmIteration() {
+                progressIndicator.isHidden = false
+                progressObservation = progress.observe(\.fractionCompleted) { [weak self] (progress: Progress, change: NSKeyValueObservedChange<Double>) in
+                    print("Observing progress change: \(progress.fractionCompleted)")
+                    DispatchQueue.main.async {
+                        guard let strongSelf = self else {
+                            return
+                        }
+                        strongSelf.progressIndicator.doubleValue = progress.fractionCompleted
+                        if progress.isFinished {
+                            // TODO: Delay this.
+                            strongSelf.progressIndicator.isHidden = true
+                            strongSelf.progressObservation = nil
+                        }
+                    }
+                }
+            }
         case .some("z"):
             renderer.drawLines = !renderer.drawLines
         default:

@@ -166,16 +166,18 @@ class Renderer: NSObject, MTKViewDelegate {
 
     }
 
-    func scheduleAlgorithmIteration() {
+    func scheduleAlgorithmIteration() -> Progress? {
+        var progress: Progress? = nil
         regenerationSemaphore.wait()
         if !terrain.generator.needsGPU {
             print("Rendering terrain...")
-            self.terrain.generator.render {
+            progress = self.terrain.generate {
                 print("Rendering terrain...complete!")
                 self.didUpdateTerrain = true
             }
         }
         regenerationSemaphore.signal()
+        return progress
     }
 
     private func updateDynamicBufferState() {

@@ -73,6 +73,11 @@ kernel void updateGeometryNormals(constant float3 *vertexes [[buffer(GeneratorBu
     normals[tid] = normal;
 }
 
+kernel void updateGeometryVertexNormals()
+{
+    
+}
+
 #pragma mark - ZeroGenerator
 
 kernel void zeroKernel(texture2d<float, access::write> outTexture [[texture(GeneratorTextureIndexOut)]],

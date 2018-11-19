@@ -25,7 +25,7 @@ protocol TerrainGenerator {
 
     func updateUniforms()
     func encode(in encoder: MTLComputeCommandEncoder)
-    func render(completion: @escaping () -> Void)
+    func render(progress: Progress) -> [Float]
 }
 
 class Kernel {
@@ -99,7 +99,9 @@ class ZeroAlgorithm: Kernel, TerrainGenerator {
 
     func updateUniforms() { }
 
-    func render(completion: @escaping () -> Void) { }
+    func render(progress: Progress) -> [Float] {
+        return []
+    }
 }
 
 /// Randomly generate heights that are independent of all others.
@@ -133,7 +135,9 @@ class RandomAlgorithm: Kernel, TerrainGenerator {
         RandomAlgorithmUniforms_refreshRandoms(uniforms)
     }
 
-    func render(completion: @escaping () -> Void) { }
+    func render(progress: Progress) -> [Float] {
+        return []
+    }
 }
 
 /// Implementation of the Diamond-Squares algorithm.
@@ -224,20 +228,25 @@ public class DiamondSquareGenerator: TerrainGenerator {
             ]
         }
 
-        func breadthFirstSearch(visit: (Box) -> (Void)) {
+        func breadthFirstSearch(progress: Progress, visit: (Box) -> (Void)) {
             var queue = Queue<Box>()
+
             queue.enqueue(item: self)
+            progress.totalUnitCount += 1
+
             while let box = queue.dequeue() {
                 visit(box)
-                queue.enqueue(items: box.subdivisions)
+                progress.completedUnitCount += 1
+
+                let subdivisions = box.subdivisions
+                queue.enqueue(items: subdivisions)
+                progress.totalUnitCount += Int64(subdivisions.count)
             }
         }
     }
 
     struct Algorithm {
         let grid: Box
-
-        private let queue = DispatchQueue(label: "Diamond-Square Algorithm Queue")
 
         var roughness: Float = 1.0 {
             didSet {
@@ -253,14 +262,9 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         /// Run the algorithm and return the genreated height map.
-        func render(completion: @escaping ([Float]) -> Void) {
-            queue.async {
-                let heightMap = self.queue_render()
-                completion(heightMap)
-            }
-        }
+        func render(progress: Progress) -> [Float] {
+            let renderProgress = Progress(totalUnitCount: 1, parent: progress, pendingUnitCount: 1)
 
-        func queue_render() -> [Float] {
             os_signpost(.begin, log: Log, name: "DiamondSquare.render")
 
             var heightMap = [Float](repeating: 0, count: grid.size.w * grid.size.h)
@@ -270,8 +274,9 @@ public class DiamondSquareGenerator: TerrainGenerator {
                 let idx = convert(pointToIndex: p)
                 heightMap[idx] = Float.random(in: randomRange)
             }
+            renderProgress.completedUnitCount += 1
 
-            grid.breadthFirstSearch { (box: Box) in
+            grid.breadthFirstSearch(progress: renderProgress) { (box: Box) in
                 // 1. Diamond step. Find the midpoint of the square defined by `box` and set its value.
                 let midpoint = box.midpoint
                 let cornerValues = box.corners.map { (pt: Point) -> Float in
@@ -366,15 +371,20 @@ public class DiamondSquareGenerator: TerrainGenerator {
         algorithm = Algorithm(grid: Box(origin: Point(), size: Size(w: DiamondSquareGenerator.textureSize.width, h: DiamondSquareGenerator.textureSize.height)))
     }
 
-    func render(completion: @escaping () -> Void) {
-        algorithm.render { (heightMap: [Float]) in
-            let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareGenerator.textureSize)
-            let newActiveTexture = (self.activeTexture + 1) % self.textures.count
-            self.textures[newActiveTexture].replace(region: region, mipmapLevel: 0, withBytes: heightMap, bytesPerRow: MemoryLayout<Float>.stride * DiamondSquareGenerator.textureSize.width)
-            self.activeTexture = newActiveTexture
+    func render(progress: Progress) -> [Float] {
+        let algProgress = Progress(totalUnitCount: 2, parent: progress, pendingUnitCount: 2)
 
-            completion()
-        }
+        let heights = algorithm.render(progress: algProgress)
+        algProgress.completedUnitCount += 1
+
+        // Swap the active texture to the new one. Copy the height map into the new texture.
+        let region = MTLRegion(origin: MTLOrigin(), size: DiamondSquareGenerator.textureSize)
+        let newActiveTexture = (self.activeTexture + 1) % self.textures.count
+        self.textures[newActiveTexture].replace(region: region, mipmapLevel: 0, withBytes: heights, bytesPerRow: MemoryLayout<Float>.stride * DiamondSquareGenerator.textureSize.width)
+        self.activeTexture = newActiveTexture
+        algProgress.completedUnitCount += 1
+
+        return heights
     }
 
     // MARK: Algorithm
