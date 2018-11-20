@@ -18,7 +18,7 @@ let alignedUniformsSize = (MemoryLayout<Uniforms>.size & ~0xFF) + 0x100
 let maxBuffersInFlight = 3
 
 let terrainDimensions = float2(10, 10)
-let terrainSegments = uint2(5, 5)
+let terrainSegments = uint2(20, 20)
 
 enum RendererError: Error {
     case badVertexDescriptor
