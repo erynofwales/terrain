@@ -46,7 +46,8 @@ typedef NS_ENUM(NSInteger, GeneratorBufferIndex) {
     GeneratorBufferIndexTexCoords = 1,
     GeneratorBufferIndexIndexes = 2,
     GeneratorBufferIndexNormals = 3,
-    GeneratorBufferIndexUniforms = 4,
+    GeneratorBufferIndexFaceNormals = 4,
+    GeneratorBufferIndexUniforms = 5,
 };
 
 typedef NS_ENUM(NSInteger, GeneratorTextureIndex) {

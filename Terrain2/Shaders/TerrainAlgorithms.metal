@@ -46,7 +46,7 @@ private:
 kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTextureIndexIn)]],
                                   constant float2 *texCoords [[buffer(GeneratorBufferIndexTexCoords)]],
                                   constant Uniforms &uniforms [[buffer(GeneratorBufferIndexUniforms)]],
-                                  device packed_float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
+                                  device packed_float3 *vertexes [[buffer(GeneratorBufferIndexMeshPositions)]],
                                   uint2 tid [[thread_position_in_grid]])
 {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
@@ -61,9 +61,9 @@ kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTe
     vertexes[vIdx].y = height.r;
 }
 
-kernel void updateGeometryNormals(constant float3 *vertexes [[buffer(GeneratorBufferIndexVertexes)]],
+kernel void updateGeometryNormals(constant float3 *vertexes [[buffer(GeneratorBufferIndexMeshPositions)]],
                                   constant packed_uint3 *indexes [[buffer(GeneratorBufferIndexIndexes)]],
-                                  device packed_float3 *normals [[buffer(GeneratorBufferIndexNormals)]],
+                                  device packed_float3 *normals [[buffer(GeneratorBufferIndexFaceNormals)]],
                                   uint tid [[thread_position_in_grid]])
 {
     const uint3 triIdx = indexes[tid];

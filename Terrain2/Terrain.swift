@@ -87,6 +87,7 @@ class Terrain: NSObject {
     let segments: uint2
     let vertexDescriptor: MTLVertexDescriptor
     let mesh: MTKMesh
+    let faceNormalsBuffer: MTLBuffer
 
     var generator: TerrainGenerator
 
@@ -116,6 +117,14 @@ class Terrain: NSObject {
             print("Unable to create compute pipelines for terrain geometry updates. Error: \(error)")
             return nil
         }
+
+        // A normal is a float 3. Two triangles per segment, x * t segments.
+        let faceNormalsLength = MemoryLayout<float3>.stride * 2 * Int(segments.x * segments.y)
+        guard let faceNormalsBuf = device.makeBuffer(length: faceNormalsLength, options: .storageModePrivate) else {
+            print("Couldn't create buffer for face normals")
+            return nil
+        }
+        faceNormalsBuffer = faceNormalsBuf
 
         super.init()
     }
@@ -164,9 +173,8 @@ class Terrain: NSObject {
             computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
             let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
             computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
-//            let normalBuffer = mesh.vertexBuffers[BufferIndex.faceNormals.rawValue]
-//            computeEncoder.setBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: BufferIndex.faceNormals.rawValue)
-            computeEncoder.dispatchThreads(MTLSize(width: mesh.vertexCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
+            computeEncoder.setBuffer(faceNormalsBuffer, offset: 0, index: GeneratorBufferIndex.faceNormals.rawValue)
+            computeEncoder.dispatchThreads(MTLSize(width: 2 * Int(segments.x * segments.y), height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
         }
