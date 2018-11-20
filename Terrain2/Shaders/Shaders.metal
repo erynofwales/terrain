@@ -33,18 +33,12 @@ typedef struct
 #pragma mark - Geometry Shaders
 
 vertex ColorInOut vertexShader(Vertex in [[stage_in]],
-                               texture2d<float> heights [[texture(0)]],
-                               constant Uniforms & uniforms [[buffer(BufferIndexUniforms)]])
+                               constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]])
 {
-//    constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
-
     ColorInOut out;
 
-//    float4 height = heights.sample(s, in.texCoord);
-
-    // Replace the y coordinate with the height we read from the texture.
     out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(in.position, 1.0);
-    out.normal = in.normal;
+    out.normal = uniforms.normalMatrix * in.normal;
     out.texCoord = in.texCoord;
 
     return out;
