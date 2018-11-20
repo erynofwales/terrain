@@ -18,7 +18,8 @@ class DiamondSquareAlgorithmPerformanceTests: XCTestCase {
         let box = Box(origin: Point(x: 0, y: 0), size: Size(w: 129, h: 129))
         let alg = DiamondSquareGenerator.Algorithm(grid: box)
         measure {
-            _ = alg.queue_render()
+            let prog = Progress(totalUnitCount: 1)
+            _ = alg.render(progress: prog)
         }
     }
 }
@@ -122,7 +123,8 @@ class DiamondSquareBoxTests: XCTestCase {
             Box(origin: Point(x: 3, y: 3), size: Size(w: 2, h: 2)),
         ].reversed()
 
-        box.breadthFirstSearch { (box: Box) -> (Void) in
+        let prog = Progress(totalUnitCount: 1)
+        box.breadthFirstSearch(progress: prog) { (box: Box) -> (Void) in
             let exBox = expectedBoxes.popLast()
             XCTAssertNotNil(exBox)
             XCTAssertEqual(box, exBox!)
