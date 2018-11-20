@@ -74,7 +74,7 @@ vertex float4 normalVertexShader(constant packed_float3 *positions [[buffer(Buff
     float3 v = positions[instID];
     if ( vertID == 1 )
     {
-        v += normals[instID];
+        v += 0.25 * normals[instID];
     }
     float4 out = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v, 1.0);
     return out;
@@ -82,5 +82,5 @@ vertex float4 normalVertexShader(constant packed_float3 *positions [[buffer(Buff
 
 fragment half4 normalFragmentShader()
 {
-    return half4(0.0, 0.0, 1.0, 1.0);
+    return half4(0, 1, 0, 1);
 }
