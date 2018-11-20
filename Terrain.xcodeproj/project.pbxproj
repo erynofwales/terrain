@@ -12,6 +12,7 @@
 		C018AD4021978E690094BE3C /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD3F21978E690094BE3C /* Queue.swift */; };
 		C018AD422197907B0094BE3C /* QueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD412197907B0094BE3C /* QueueTests.swift */; };
 		C019C8512191CE7100EAD5BB /* Uniforms.m in Sources */ = {isa = PBXBuildFile; fileRef = C019C8502191CE7100EAD5BB /* Uniforms.m */; };
+		C028A6A221A46796005DE718 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = C028A6A121A46796005DE718 /* Math.swift */; };
 		C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08C589F218F46F000EAFC2D /* Algorithms.swift */; };
 		C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */ = {isa = PBXBuildFile; fileRef = C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */; };
 		C0C15A8E218DDD85007494E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15A8D218DDD85007494E2 /* AppDelegate.swift */; };
@@ -51,6 +52,7 @@
 		C018AD3F21978E690094BE3C /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		C018AD412197907B0094BE3C /* QueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTests.swift; sourceTree = "<group>"; };
 		C019C8502191CE7100EAD5BB /* Uniforms.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Uniforms.m; sourceTree = "<group>"; };
+		C028A6A121A46796005DE718 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		C08C589F218F46F000EAFC2D /* Algorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithms.swift; sourceTree = "<group>"; };
 		C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TerrainAlgorithms.metal; sourceTree = "<group>"; };
 		C0C15A8A218DDD85007494E2 /* Terrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Terrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -179,6 +181,7 @@
 				C0C15AB2218E2A90007494E2 /* AppDelegate.swift */,
 				C0C15AB4218E2A90007494E2 /* GameViewController.swift */,
 				C0C15AB6218E2A90007494E2 /* Renderer.swift */,
+				C028A6A121A46796005DE718 /* Math.swift */,
 				C0C15AC5218E32B2007494E2 /* Terrain.swift */,
 				C08C589F218F46F000EAFC2D /* Algorithms.swift */,
 				C018AD3F21978E690094BE3C /* Queue.swift */,
@@ -355,6 +358,7 @@
 				C019C8512191CE7100EAD5BB /* Uniforms.m in Sources */,
 				C018AD4021978E690094BE3C /* Queue.swift in Sources */,
 				C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */,
+				C028A6A221A46796005DE718 /* Math.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
