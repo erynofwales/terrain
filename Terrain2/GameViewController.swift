@@ -72,7 +72,6 @@ class GameViewController: NSViewController {
             if let progress = renderer.scheduleAlgorithmIteration() {
                 progressIndicator.isHidden = false
                 progressObservation = progress.observe(\.fractionCompleted) { [weak self] (progress: Progress, change: NSKeyValueObservedChange<Double>) in
-                    print("Observing progress change: \(progress.fractionCompleted)")
                     DispatchQueue.main.async {
                         guard let strongSelf = self else {
                             return

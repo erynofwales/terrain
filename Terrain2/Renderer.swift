@@ -48,7 +48,11 @@ class Renderer: NSObject, MTKViewDelegate {
 
     var terrain: Terrain
 
-    var drawLines = true
+    var drawLines = true {
+        didSet {
+            print("Line drawing \(drawLines ? "enabled" : "disabled")")
+        }
+    }
 
     private var iterateTerrainAlgorithm = true
     private var didUpdateTerrain = false
