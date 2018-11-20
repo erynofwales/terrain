@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, GeneratorTextureIndex) {
 typedef struct {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
+    matrix_float3x3 normalMatrix;
     packed_float2 terrainDimensions;
     packed_uint2 terrainSegments;
 } Uniforms;

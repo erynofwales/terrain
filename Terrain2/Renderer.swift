@@ -206,8 +206,12 @@ class Renderer: NSObject, MTKViewDelegate {
         let rotationAxis = float3(0, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
         let viewMatrix = matrix4x4_translation(0.0, -2.0, -8.0)
-        uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
+        let modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
+        uniforms[0].modelViewMatrix = modelViewMatrix
         rotation += 0.003
+
+        let rotSclModelViewMatrix = float3x3(modelViewMatrix.columns.0.xyz, modelViewMatrix.columns.1.xyz, modelViewMatrix.columns.2.xyz)
+        uniforms[0].normalMatrix = rotSclModelViewMatrix.inverse.transpose
 
         uniforms[0].terrainDimensions = terrain.dimensions
         uniforms[0].terrainSegments = terrain.segments
