@@ -33,6 +33,7 @@ typedef struct
 #pragma mark - Geometry Shaders
 
 vertex ColorInOut vertexShader(Vertex in [[stage_in]],
+                               constant packed_float3 *faceNormals [[buffer(BufferIndexFaceNormals)]],
                                constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]])
 {
     ColorInOut out;

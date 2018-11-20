@@ -279,7 +279,8 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderEncoder.setDepthStencilState(depthState)
 
                     renderEncoder.setTriangleFillMode(drawLines ? .lines : .fill)
-                    
+
+                    renderEncoder.setVertexBuffer(terrain.faceNormalsBuffer, offset: 0, index: BufferIndex.faceNormals.rawValue)
                     renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
                     renderEncoder.setFragmentBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
                     
