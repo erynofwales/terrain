@@ -63,6 +63,28 @@ typedef NS_ENUM(NSInteger, GeneratorTextureIndex) {
 };
 
 typedef struct {
+    bool enabled;
+#ifdef __METAL_VERSION__
+    simd::float4 position;
+    simd::float3 color;
+#else
+    simd_float4 position;
+    simd_float3 color;
+#endif
+} Light;
+
+struct Material {
+#ifdef __METAL_VERSION__
+    simd::float3 diffuseColor;
+    simd::float3 specularColor;
+#else
+    simd_float3 diffuseColor;
+    simd_float3 specularColor;
+#endif
+    float specularExponent;
+};
+
+typedef struct {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
     matrix_float3x3 normalMatrix;
