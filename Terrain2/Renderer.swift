@@ -34,7 +34,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState
     var normalPipelineState: MTLRenderPipelineState
     var depthState: MTLDepthStencilState
-    var colorMap: MTLTexture
 
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     let regenerationSemaphore = DispatchSemaphore(value: 1)
@@ -103,13 +102,6 @@ class Renderer: NSObject, MTKViewDelegate {
         depthStateDesciptor.depthCompareFunction = MTLCompareFunction.less
         depthStateDesciptor.isDepthWriteEnabled = true
         self.depthState = device.makeDepthStencilState(descriptor:depthStateDesciptor)!
-
-        do {
-            colorMap = try Renderer.loadTexture(device: device, textureName: "ColorMap")
-        } catch {
-            print("Unable to load texture. Error info: \(error)")
-            return nil
-        }
 
         super.init()
     }
@@ -302,7 +294,6 @@ class Renderer: NSObject, MTKViewDelegate {
                     }
 
                     renderEncoder.setVertexTexture(terrain.generator.outTexture, index: 0)
-                    renderEncoder.setFragmentTexture(colorMap, index: TextureIndex.color.rawValue)
                     
                     for submesh in terrain.mesh.submeshes {
                         renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
