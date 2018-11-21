@@ -54,6 +54,12 @@ class Renderer: NSObject, MTKViewDelegate {
         }
     }
 
+    var drawNormals = true {
+        didSet {
+            print("Normal drawing \(drawNormals ? "enabled" : "disabled")")
+        }
+    }
+
     private var iterateTerrainAlgorithm = true
     private var didUpdateTerrain = false
 
@@ -314,41 +320,22 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderEncoder.endEncoding()
                 }
 
-                let normalsRenderPassDescriptor = renderPassDescriptor.copy() as! MTLRenderPassDescriptor
-                normalsRenderPassDescriptor.colorAttachments[0].loadAction = .load
-                normalsRenderPassDescriptor.colorAttachments[0].storeAction = .store
+                if drawNormals {
+                    let normalsRenderPassDescriptor = renderPassDescriptor.copy() as! MTLRenderPassDescriptor
+                    normalsRenderPassDescriptor.colorAttachments[0].loadAction = .load
+                    normalsRenderPassDescriptor.colorAttachments[0].storeAction = .store
 
-                if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: normalsRenderPassDescriptor) {
-                    renderEncoder.label = "Normals Render Encoder"
+                    if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: normalsRenderPassDescriptor) {
+                        renderEncoder.label = "Normals Render Encoder"
 
-                    renderEncoder.setRenderPipelineState(normalPipelineState)
-                    renderEncoder.setDepthStencilState(depthState)
+                        renderEncoder.setRenderPipelineState(normalPipelineState)
+                        renderEncoder.setDepthStencilState(depthState)
 
-                    renderEncoder.pushDebugGroup("Draw Vertex Normals")
+                        encodeVertexNormalsDrawCall(encoder: renderEncoder)
+                        encodeFaceNormalsDrawCall(encoder: renderEncoder)
 
-                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-                    let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
-
-                    renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: NormalBufferIndex.points.rawValue)
-                    renderEncoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: NormalBufferIndex.normals.rawValue)
-                    renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset: uniformBufferOffset, index: NormalBufferIndex.uniforms.rawValue)
-
-                    renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: terrain.mesh.vertexCount)
-
-                    renderEncoder.popDebugGroup()
-
-                    renderEncoder.pushDebugGroup("Draw Face Normals")
-
-                    let faceMidpointsBuffer = terrain.faceMidpointsBuffer
-                    let faceNormalsBuffer = terrain.faceNormalsBuffer
-
-                    renderEncoder.setVertexBuffer(faceMidpointsBuffer, offset: 0, index: NormalBufferIndex.points.rawValue)
-                    renderEncoder.setVertexBuffer(faceNormalsBuffer, offset: 0, index: NormalBufferIndex.normals.rawValue)
-                    renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: NormalBufferIndex.uniforms.rawValue)
-                    renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: 2 * Int(terrain.segments.x * terrain.segments.y))
-                    renderEncoder.popDebugGroup()
-
-                    renderEncoder.endEncoding()
+                        renderEncoder.endEncoding()
+                    }
                 }
 
                 if let drawable = view.currentDrawable {
@@ -365,6 +352,35 @@ class Renderer: NSObject, MTKViewDelegate {
 
         let aspect = Float(size.width) / Float(size.height)
         projectionMatrix = matrix_perspective_right_hand(fovyRadians: radians_from_degrees(65), aspectRatio:aspect, nearZ: 0.1, farZ: 100.0)
+    }
+
+    private func encodeVertexNormalsDrawCall(encoder: MTLRenderCommandEncoder) {
+        encoder.pushDebugGroup("Draw Vertex Normals")
+
+        let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+        let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
+
+        encoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: NormalBufferIndex.points.rawValue)
+        encoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: NormalBufferIndex.normals.rawValue)
+        encoder.setVertexBuffer(dynamicUniformBuffer, offset: uniformBufferOffset, index: NormalBufferIndex.uniforms.rawValue)
+        encoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: terrain.mesh.vertexCount)
+
+        encoder.popDebugGroup()
+    }
+
+    private func encodeFaceNormalsDrawCall(encoder: MTLRenderCommandEncoder) {
+        encoder.pushDebugGroup("Draw Face Normals")
+
+        let faceMidpointsBuffer = terrain.faceMidpointsBuffer
+        let faceNormalsBuffer = terrain.faceNormalsBuffer
+        let instanceCount = 2 * Int(terrain.segments.x * terrain.segments.y)
+
+        encoder.setVertexBuffer(faceMidpointsBuffer, offset: 0, index: NormalBufferIndex.points.rawValue)
+        encoder.setVertexBuffer(faceNormalsBuffer, offset: 0, index: NormalBufferIndex.normals.rawValue)
+        encoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: NormalBufferIndex.uniforms.rawValue)
+        encoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: instanceCount)
+
+        encoder.popDebugGroup()
     }
 }
 

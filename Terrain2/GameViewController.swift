@@ -68,7 +68,7 @@ class GameViewController: NSViewController {
 
     override func keyDown(with event: NSEvent) {
         switch event.charactersIgnoringModifiers {
-        case .some("n"):
+        case .some(" "):
             if let progress = renderer.scheduleAlgorithmIteration() {
                 progressIndicator.isHidden = false
                 progressObservation = progress.observe(\.fractionCompleted) { [weak self] (progress: Progress, change: NSKeyValueObservedChange<Double>) in
@@ -85,6 +85,8 @@ class GameViewController: NSViewController {
                     }
                 }
             }
+        case .some("n"):
+            renderer.drawNormals = !renderer.drawNormals
         case .some("z"):
             renderer.drawLines = !renderer.drawLines
         default:
