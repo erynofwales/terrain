@@ -134,8 +134,6 @@ class Terrain: NSObject {
         faceMidpointsBuffer = faceMidpointsBuf
 
         super.init()
-
-        populateInitialFaceNormals()
     }
 
     func generate(completion: @escaping () -> Void) -> Progress {

@@ -16,25 +16,23 @@
 
 using namespace metal;
 
-typedef struct
-{
+typedef struct {
     float3 position [[attribute(VertexAttributePosition)]];
     float3 normal   [[attribute(VertexAttributeNormal)]];
     float2 texCoord [[attribute(VertexAttributeTexCoord)]];
 } Vertex;
 
-typedef struct
-{
+typedef struct {
     float4 position [[position]];
+    float4 eyeCoords;
     float3 normal;
-    float4 color;
     float2 texCoord;
 } ColorInOut;
 
 #pragma mark - Geometry Shaders
 
 vertex ColorInOut vertexShader(Vertex in [[stage_in]],
-                               constant float3 *faceNormals [[buffer(BufferIndexFaceNormals)]],
+                               constant packed_float3 *faceNormals [[buffer(BufferIndexFaceNormals)]],
                                constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]],
                                uint vid [[vertex_id]])
 {
@@ -42,25 +40,23 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
 
     float4 vertexCoords = float4(in.position, 1.0);
     float4 eyeCoords = uniforms.modelViewMatrix * vertexCoords;
+
     out.position = uniforms.projectionMatrix * eyeCoords;
-
-    float3 normal = normalize(uniforms.normalMatrix * in.normal);
-    out.normal = normal;
-
-    float3 lightDirection = -eyeCoords.xyz;
-    float lightDotNormal = dot(normal, lightDirection);
-    out.color = float4(abs(lightDotNormal) * float3(0.2), 1.0);
-
+    out.eyeCoords = eyeCoords;
+    out.normal = in.normal;
     out.texCoord = in.texCoord;
 
     return out;
 }
 
 fragment float4 fragmentShader(ColorInOut in [[stage_in]],
-                               constant Uniforms & uniforms [[ buffer(BufferIndexUniforms) ]],
-                               texture2d<half> colorMap     [[ texture(TextureIndexColor) ]])
+                               constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]])
 {
-    return in.color;
+    float3 normal = normalize(uniforms.normalMatrix * in.normal);
+    float3 lightDirection = -in.eyeCoords.xyz;
+    float lightDotNormal = dot(normal, lightDirection);
+    float4 color(abs(lightDotNormal) * float3(0.2), 1.0);
+    return color;
 }
 
 #pragma mark - Normal Shaders
