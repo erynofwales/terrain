@@ -11,7 +11,6 @@
 		C018AD3B219518480094BE3C /* AlgorithmsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD3A219518480094BE3C /* AlgorithmsTests.swift */; };
 		C018AD4021978E690094BE3C /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD3F21978E690094BE3C /* Queue.swift */; };
 		C018AD422197907B0094BE3C /* QueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD412197907B0094BE3C /* QueueTests.swift */; };
-		C019C8512191CE7100EAD5BB /* Uniforms.m in Sources */ = {isa = PBXBuildFile; fileRef = C019C8502191CE7100EAD5BB /* Uniforms.m */; };
 		C028A6A221A46796005DE718 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = C028A6A121A46796005DE718 /* Math.swift */; };
 		C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08C589F218F46F000EAFC2D /* Algorithms.swift */; };
 		C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */ = {isa = PBXBuildFile; fileRef = C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */; };
@@ -51,7 +50,6 @@
 		C018AD3A219518480094BE3C /* AlgorithmsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmsTests.swift; sourceTree = "<group>"; };
 		C018AD3F21978E690094BE3C /* Queue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		C018AD412197907B0094BE3C /* QueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTests.swift; sourceTree = "<group>"; };
-		C019C8502191CE7100EAD5BB /* Uniforms.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Uniforms.m; sourceTree = "<group>"; };
 		C028A6A121A46796005DE718 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		C08C589F218F46F000EAFC2D /* Algorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithms.swift; sourceTree = "<group>"; };
 		C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TerrainAlgorithms.metal; sourceTree = "<group>"; };
@@ -187,7 +185,6 @@
 				C018AD3F21978E690094BE3C /* Queue.swift */,
 				C018AD3E219728890094BE3C /* Shaders */,
 				C0C15ABA218E2A90007494E2 /* ShaderTypes.h */,
-				C019C8502191CE7100EAD5BB /* Uniforms.m */,
 				C0C15ABB218E2A90007494E2 /* Assets.xcassets */,
 				C0C15ABD218E2A90007494E2 /* Main.storyboard */,
 				C0C15AC0218E2A90007494E2 /* Info.plist */,
@@ -355,7 +352,6 @@
 				C0C15AC6218E32B3007494E2 /* Terrain.swift in Sources */,
 				C0C15AB7218E2A90007494E2 /* Renderer.swift in Sources */,
 				C0C15AB3218E2A90007494E2 /* AppDelegate.swift in Sources */,
-				C019C8512191CE7100EAD5BB /* Uniforms.m in Sources */,
 				C018AD4021978E690094BE3C /* Queue.swift in Sources */,
 				C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */,
 				C028A6A221A46796005DE718 /* Math.swift in Sources */,

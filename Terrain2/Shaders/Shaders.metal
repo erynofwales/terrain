@@ -43,6 +43,7 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
 
     out.position = uniforms.projectionMatrix * eyeCoords;
     out.eyeCoords = eyeCoords;
+    // TODO: Use the face normal.
     out.normal = normalize(in.normal);
     out.texCoord = in.texCoord;
 
