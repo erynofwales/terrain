@@ -21,13 +21,18 @@
 
 #include <simd/simd.h>
 
-typedef NS_ENUM(NSInteger, BufferIndex)
-{
+typedef NS_ENUM(NSInteger, BufferIndex) {
     BufferIndexMeshPositions  = 0,
     BufferIndexNormals        = 1,
     BufferIndexMeshGenerics   = 2,
     BufferIndexFaceNormals    = 3,
     BufferIndexUniforms       = 4,
+};
+
+typedef NS_ENUM(NSInteger, NormalBufferIndex) {
+    NormalBufferIndexPoints = 0,
+    NormalBufferIndexNormals = 1,
+    NormalBufferIndexUniforms = 2,
 };
 
 typedef NS_ENUM(NSInteger, VertexAttribute)
@@ -48,7 +53,8 @@ typedef NS_ENUM(NSInteger, GeneratorBufferIndex) {
     GeneratorBufferIndexIndexes = 2,
     GeneratorBufferIndexNormals = 3,
     GeneratorBufferIndexFaceNormals = 4,
-    GeneratorBufferIndexUniforms = 5,
+    GeneratorBufferIndexFaceMidpoints = 5,
+    GeneratorBufferIndexUniforms = 6,
 };
 
 typedef NS_ENUM(NSInteger, GeneratorTextureIndex) {

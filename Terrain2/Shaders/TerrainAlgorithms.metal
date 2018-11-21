@@ -61,16 +61,23 @@ kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTe
     vertexes[vIdx].y = height.r;
 }
 
-kernel void updateGeometryNormals(constant float3 *vertexes [[buffer(GeneratorBufferIndexMeshPositions)]],
-                                  constant packed_uint3 *indexes [[buffer(GeneratorBufferIndexIndexes)]],
-                                  device packed_float3 *normals [[buffer(GeneratorBufferIndexFaceNormals)]],
+kernel void updateGeometryNormals(constant packed_float3 *meshPositions [[buffer(GeneratorBufferIndexMeshPositions)]],
+                                  constant packed_ushort3 *indexes [[buffer(GeneratorBufferIndexIndexes)]],
+                                  device packed_float3 *faceNormals [[buffer(GeneratorBufferIndexFaceNormals)]],
+                                  device packed_float3 *faceMidpoints [[buffer(GeneratorBufferIndexFaceMidpoints)]],
                                   uint tid [[thread_position_in_grid]])
 {
-    const uint3 triIdx = indexes[tid];
-    float3 side1(vertexes[triIdx.y] - vertexes[triIdx.x]);
-    float3 side2(vertexes[triIdx.y] - vertexes[triIdx.z]);
-    float3 normal(normalize(cross(side1, side2)));
-    normals[tid] = normal;
+    const ushort3 triangleIndex = indexes[tid];
+
+    const float3 v1 = meshPositions[triangleIndex.x];
+    const float3 v2 = meshPositions[triangleIndex.y];
+    const float3 v3 = meshPositions[triangleIndex.z];
+
+    float3 side1 = v1 - v2;
+    float3 side2 = v1 - v3;
+    float3 normal = normalize(cross(side1, side2));
+    faceNormals[tid] = normal;
+    faceMidpoints[tid] = 0.3333333333 * (v1 + v2 + v3);
 }
 
 kernel void updateGeometryVertexNormals()

@@ -88,6 +88,7 @@ class Terrain: NSObject {
     let vertexDescriptor: MTLVertexDescriptor
     let mesh: MTKMesh
     let faceNormalsBuffer: MTLBuffer
+    let faceMidpointsBuffer: MTLBuffer
 
     var generator: TerrainGenerator
 
@@ -118,15 +119,23 @@ class Terrain: NSObject {
             return nil
         }
 
-        // A normal is a float 3. Two triangles per segment, x * t segments.
-        let faceNormalsLength = MemoryLayout<float3>.stride * 2 * Int(segments.x * segments.y)
-        guard let faceNormalsBuf = device.makeBuffer(length: faceNormalsLength, options: .storageModePrivate) else {
+        // A normal is a float3. Two triangles per segment, x * t segments.
+        let faceDataLength = 12 * 2 * Int(segments.x * segments.y)
+        guard let faceNormalsBuf = device.makeBuffer(length: faceDataLength, options: .storageModeShared) else {
             print("Couldn't create buffer for face normals")
             return nil
         }
         faceNormalsBuffer = faceNormalsBuf
 
+        guard let faceMidpointsBuf = device.makeBuffer(length: faceDataLength, options: .storageModeShared) else {
+            print("Couldn't create buffer for face normals")
+            return nil
+        }
+        faceMidpointsBuffer = faceMidpointsBuf
+
         super.init()
+
+        populateInitialFaceNormals()
     }
 
     func generate(completion: @escaping () -> Void) -> Progress {
@@ -134,7 +143,7 @@ class Terrain: NSObject {
         generatorQueue.async {
             progress.becomeCurrent(withPendingUnitCount: 1)
 
-            let _ = self.generator.render(progress: progress)
+            let heights = self.generator.render(progress: progress)
             progress.completedUnitCount += 1
 
             // TODO: Store heights
@@ -149,7 +158,7 @@ class Terrain: NSObject {
 
     func scheduleGeometryUpdates(inCommandBuffer commandBuffer: MTLCommandBuffer, uniforms: MTLBuffer, uniformsOffset: Int) {
         if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-            print("Scheduling update geometry heights")
+            //print("Scheduling update geometry heights")
             computeEncoder.label = "Geometry Heights Encoder"
             computeEncoder.pushDebugGroup("Update Geometry: Heights")
             computeEncoder.setComputePipelineState(updateHeightsPipeline)
@@ -165,18 +174,27 @@ class Terrain: NSObject {
         }
 
         if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
-            print("Scheduling update geometry normals")
+            //print("Scheduling update geometry normals")
             computeEncoder.label = "Surface Normals Encoder"
             computeEncoder.pushDebugGroup("Update Geometry: Surface Normals")
             computeEncoder.setComputePipelineState(updateSurfaceNormalsPipeline)
             let indexBuffer = mesh.submeshes[0].indexBuffer
-            computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
-            let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-            computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
+            computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
+            let positionsBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+            computeEncoder.setBuffer(positionsBuffer.buffer, offset: positionsBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
             computeEncoder.setBuffer(faceNormalsBuffer, offset: 0, index: GeneratorBufferIndex.faceNormals.rawValue)
+            computeEncoder.setBuffer(faceMidpointsBuffer, offset: 0, index: GeneratorBufferIndex.faceMidpoints.rawValue)
             computeEncoder.dispatchThreads(MTLSize(width: 2 * Int(segments.x * segments.y), height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
+        }
+    }
+
+    private func populateInitialFaceNormals() {
+        let normalsCount = 2 * Int(segments.x * segments.y)
+        let faceNormals = UnsafeMutableRawPointer(faceNormalsBuffer.contents()).bindMemory(to: float3.self, capacity: normalsCount)
+        for i in 0..<normalsCount {
+            faceNormals[i] = float3(0, 1, 0)
         }
     }
 }

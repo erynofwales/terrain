@@ -320,21 +320,34 @@ class Renderer: NSObject, MTKViewDelegate {
 
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: normalsRenderPassDescriptor) {
                     renderEncoder.label = "Normals Render Encoder"
-                    renderEncoder.pushDebugGroup("Draw Normals")
 
                     renderEncoder.setRenderPipelineState(normalPipelineState)
                     renderEncoder.setDepthStencilState(depthState)
 
-                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
-                    renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: BufferIndex.meshPositions.rawValue)
-                    let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
-                    renderEncoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: BufferIndex.normals.rawValue)
+                    renderEncoder.pushDebugGroup("Draw Vertex Normals")
 
-                    renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
+                    let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+                    let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
+
+                    renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: NormalBufferIndex.points.rawValue)
+                    renderEncoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: NormalBufferIndex.normals.rawValue)
+                    renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset: uniformBufferOffset, index: NormalBufferIndex.uniforms.rawValue)
 
                     renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: terrain.mesh.vertexCount)
 
                     renderEncoder.popDebugGroup()
+
+                    renderEncoder.pushDebugGroup("Draw Face Normals")
+
+                    let faceMidpointsBuffer = terrain.faceMidpointsBuffer
+                    let faceNormalsBuffer = terrain.faceNormalsBuffer
+
+                    renderEncoder.setVertexBuffer(faceMidpointsBuffer, offset: 0, index: NormalBufferIndex.points.rawValue)
+                    renderEncoder.setVertexBuffer(faceNormalsBuffer, offset: 0, index: NormalBufferIndex.normals.rawValue)
+                    renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: NormalBufferIndex.uniforms.rawValue)
+                    renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: 2 * Int(terrain.segments.x * terrain.segments.y))
+                    renderEncoder.popDebugGroup()
+
                     renderEncoder.endEncoding()
                 }
 
