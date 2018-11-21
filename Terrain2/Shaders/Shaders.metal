@@ -49,7 +49,7 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
 
     float3 lightDirection = -eyeCoords.xyz;
     float lightDotNormal = dot(normal, lightDirection);
-    out.color = float4(abs(lightDotNormal) * float3(0.3), 1.0);
+    out.color = float4(abs(lightDotNormal) * float3(0.2), 1.0);
 
     out.texCoord = in.texCoord;
 

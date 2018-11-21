@@ -220,11 +220,9 @@ class Renderer: NSObject, MTKViewDelegate {
         uniforms[0].modelViewMatrix = modelViewMatrix
         rotation += 0.003
 
-        // Remove the fourth row and column from our model-view matrix and find its inverse-transpose, if it exists.
+        // Remove the fourth row and column from our model-view matrix. Since we're only doing rotations and translations (no scales), this serves as our normal transform matrix.
         let rotSclModelViewMatrix = float3x3(modelViewMatrix.columns.0.xyz, modelViewMatrix.columns.1.xyz, modelViewMatrix.columns.2.xyz)
-        if rotSclModelViewMatrix.determinant != 0 {
-            uniforms[0].normalMatrix = rotSclModelViewMatrix.inverse.transpose
-        }
+        uniforms[0].normalMatrix = rotSclModelViewMatrix
 
         uniforms[0].terrainDimensions = terrain.dimensions
         uniforms[0].terrainSegments = terrain.segments
@@ -266,10 +264,8 @@ class Renderer: NSObject, MTKViewDelegate {
                 didScheduleAlgorithmIteration = true
             }
 
-            if didScheduleAlgorithmIteration || needsGeometryUpdate {
-                terrain.scheduleGeometryUpdates(inCommandBuffer: commandBuffer, uniforms: dynamicUniformBuffer, uniformsOffset: uniformBufferOffset)
-            }
-            
+            terrain.scheduleGeometryUpdates(inCommandBuffer: commandBuffer, uniforms: dynamicUniformBuffer, uniformsOffset: uniformBufferOffset)
+
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid
             ///   holding onto the drawable and blocking the display pipeline any longer than necessary
             let renderPassDescriptor = view.currentRenderPassDescriptor
