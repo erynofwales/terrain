@@ -104,42 +104,6 @@ class ZeroAlgorithm: Kernel, TerrainGenerator {
     }
 }
 
-/// Randomly generate heights that are independent of all others.
-class RandomAlgorithm: Kernel, TerrainGenerator {
-    let name = "Random"
-
-    let needsGPU: Bool = true
-
-    private var uniforms: UnsafeMutablePointer<RandomAlgorithmUniforms>
-
-    init?(device: MTLDevice, library: MTLLibrary) {
-        let bufferSize = (MemoryLayout<RandomAlgorithmUniforms>.stride & ~0xFF) + 0x100;
-        guard let buffer = device.makeBuffer(length: bufferSize, options: [.storageModeShared]) else {
-            print("Couldn't create uniform buffer")
-            return nil
-        }
-
-        uniforms = UnsafeMutableRawPointer(buffer.contents()).bindMemory(to: RandomAlgorithmUniforms.self, capacity:1)
-
-        do {
-            try super.init(device: device, library: library, functionName: "randomKernel", uniformBuffer: buffer)
-        } catch let e {
-            print("Couldn't create compute kernel. Error: \(e)")
-            return nil
-        }
-
-        updateUniforms()
-    }
-
-    func updateUniforms() {
-        RandomAlgorithmUniforms_refreshRandoms(uniforms)
-    }
-
-    func render(progress: Progress) -> [Float] {
-        return []
-    }
-}
-
 /// Implementation of the Diamond-Squares algorithm.
 /// - https://en.wikipedia.org/wiki/Diamond-square_algorithm
 public class DiamondSquareGenerator: TerrainGenerator {

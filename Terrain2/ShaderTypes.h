@@ -66,8 +66,13 @@ typedef struct {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
     matrix_float3x3 normalMatrix;
-    packed_float2 terrainDimensions;
-    packed_uint2 terrainSegments;
+#ifdef __METAL_VERSION__
+    simd::packed_float2 terrainDimensions;
+    simd::packed_uint2 terrainSegments;
+#else
+    simd_packed_float2 terrainDimensions;
+    simd_packed_uint2 terrainSegments;
+#endif
 } Uniforms;
 
 #endif /* ShaderTypes_h */
