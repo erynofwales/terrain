@@ -58,7 +58,7 @@ class Renderer: NSObject, MTKViewDelegate {
         }
     }
 
-    var drawNormals = true {
+    var drawNormals = false {
         didSet {
             print("Normal drawing \(drawNormals ? "enabled" : "disabled")")
         }
@@ -167,24 +167,6 @@ class Renderer: NSObject, MTKViewDelegate {
             throw RendererError.badComputeFunction
         }
         return try device.makeComputePipelineState(function: computeFunction)
-    }
-
-    class func loadTexture(device: MTLDevice,
-                           textureName: String) throws -> MTLTexture {
-        /// Load texture data with optimal parameters for sampling
-
-        let textureLoader = MTKTextureLoader(device: device)
-
-        let textureLoaderOptions = [
-            MTKTextureLoader.Option.textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
-            MTKTextureLoader.Option.textureStorageMode: NSNumber(value: MTLStorageMode.`private`.rawValue)
-        ]
-
-        return try textureLoader.newTexture(name: textureName,
-                                            scaleFactor: 1.0,
-                                            bundle: nil,
-                                            options: textureLoaderOptions)
-
     }
 
     func scheduleAlgorithmIteration() -> Progress? {
