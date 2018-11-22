@@ -154,7 +154,7 @@ class Terrain: NSObject {
         return progress
     }
 
-    func scheduleGeometryUpdates(inCommandBuffer commandBuffer: MTLCommandBuffer, uniforms: MTLBuffer, uniformsOffset: Int) {
+    func scheduleGeometryUpdates(inCommandBuffer commandBuffer: MTLCommandBuffer, uniforms: PerFrameObject<Uniforms>) {
         if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
             //print("Scheduling update geometry heights")
             computeEncoder.label = "Geometry Heights Encoder"
@@ -165,7 +165,7 @@ class Terrain: NSObject {
             computeEncoder.setBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
             let texCoordBuffer = mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
             computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: GeneratorBufferIndex.texCoords.rawValue)
-            computeEncoder.setBuffer(uniforms, offset: uniformsOffset, index: GeneratorBufferIndex.uniforms.rawValue)
+            computeEncoder.setBuffer(uniforms.buffer, offset: uniforms.offset, index: GeneratorBufferIndex.uniforms.rawValue)
             computeEncoder.dispatchThreads(MTLSize(width: Int(segments.x + 1), height: Int(segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
