@@ -47,7 +47,7 @@ kernel void updateGeometryNormals(constant packed_float3 *meshPositions [[buffer
     float3 side2 = v1 - v3;
     float3 normal = normalize(cross(side1, side2));
     faceNormals[tid] = normal;
-    faceMidpoints[tid] = 0.3333333333 * (v1 + v2 + v3);
+    faceMidpoints[tid] = (1.0 / 3.0) * (v1 + v2 + v3);
 }
 
 kernel void updateGeometryVertexNormals()
