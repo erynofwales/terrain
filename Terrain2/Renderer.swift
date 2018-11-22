@@ -321,8 +321,8 @@ class Renderer: NSObject, MTKViewDelegate {
                         renderEncoder.setRenderPipelineState(normalPipelineState)
                         renderEncoder.setDepthStencilState(depthState)
 
-                        encodeVertexNormalsDrawCall(encoder: renderEncoder)
                         encodeFaceNormalsDrawCall(encoder: renderEncoder)
+                        encodeVertexNormalsDrawCall(encoder: renderEncoder)
 
                         renderEncoder.endEncoding()
                     }

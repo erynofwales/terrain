@@ -82,6 +82,7 @@ class Terrain: NSObject {
 
     private let updateHeightsPipeline: MTLComputePipelineState
     private let updateSurfaceNormalsPipeline: MTLComputePipelineState
+    private let updateVertexNormalsPipeline: MTLComputePipelineState
 
     let dimensions: float2
     let segments: uint2
@@ -114,6 +115,7 @@ class Terrain: NSObject {
         do {
             updateHeightsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryHeights", device: device, library: library)
             updateSurfaceNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryNormals", device: device, library: library)
+            updateVertexNormalsPipeline = try Terrain.computePipeline(withFunctionNamed: "updateGeometryVertexNormals", device: device, library: library)
         } catch {
             print("Unable to create compute pipelines for terrain geometry updates. Error: \(error)")
             return nil
@@ -158,7 +160,7 @@ class Terrain: NSObject {
         if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
             //print("Scheduling update geometry heights")
             computeEncoder.label = "Geometry Heights Encoder"
-            computeEncoder.pushDebugGroup("Update Geometry: Heights")
+            computeEncoder.pushDebugGroup("Update Heights")
             computeEncoder.setComputePipelineState(updateHeightsPipeline)
             computeEncoder.setTexture(generator.outTexture, index: GeneratorTextureIndex.in.rawValue)
             let vertexBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
@@ -174,7 +176,7 @@ class Terrain: NSObject {
         if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
             //print("Scheduling update geometry normals")
             computeEncoder.label = "Surface Normals Encoder"
-            computeEncoder.pushDebugGroup("Update Geometry: Surface Normals")
+            computeEncoder.pushDebugGroup("Update Surface Normals")
             computeEncoder.setComputePipelineState(updateSurfaceNormalsPipeline)
             let indexBuffer = mesh.submeshes[0].indexBuffer
             computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
@@ -183,6 +185,22 @@ class Terrain: NSObject {
             computeEncoder.setBuffer(faceNormalsBuffer, offset: 0, index: GeneratorBufferIndex.faceNormals.rawValue)
             computeEncoder.setBuffer(faceMidpointsBuffer, offset: 0, index: GeneratorBufferIndex.faceMidpoints.rawValue)
             computeEncoder.dispatchThreads(MTLSize(width: 2 * Int(segments.x * segments.y), height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
+            computeEncoder.popDebugGroup()
+            computeEncoder.endEncoding()
+        }
+
+        if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+            computeEncoder.label = "Vertex Normals Encoder"
+            computeEncoder.pushDebugGroup("Update Vertex Normals")
+            computeEncoder.setComputePipelineState(updateVertexNormalsPipeline)
+            let indexBuffer = mesh.submeshes[0].indexBuffer
+            computeEncoder.setBuffer(indexBuffer.buffer, offset: indexBuffer.offset, index: GeneratorBufferIndex.indexes.rawValue)
+            let positionsBuffer = mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
+            computeEncoder.setBuffer(positionsBuffer.buffer, offset: positionsBuffer.offset, index: GeneratorBufferIndex.meshPositions.rawValue)
+            computeEncoder.setBuffer(faceNormalsBuffer, offset: 0, index: GeneratorBufferIndex.faceNormals.rawValue)
+            let normalsBuffer = mesh.vertexBuffers[BufferIndex.normals.rawValue]
+            computeEncoder.setBuffer(normalsBuffer.buffer, offset: normalsBuffer.offset, index: GeneratorBufferIndex.normals.rawValue)
+            computeEncoder.dispatchThreads(MTLSize(width: 2 * Int(segments.x * segments.y), height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
         }

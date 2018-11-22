@@ -50,9 +50,12 @@ kernel void updateGeometryNormals(constant packed_float3 *meshPositions [[buffer
     faceMidpoints[tid] = (1.0 / 3.0) * (v1 + v2 + v3);
 }
 
-kernel void updateGeometryVertexNormals()
+kernel void updateGeometryVertexNormals(constant packed_float3 *meshPositions [[buffer(GeneratorBufferIndexMeshPositions)]],
+                                        constant packed_ushort3 *indexes [[buffer(GeneratorBufferIndexIndexes)]],
+                                        constant packed_float3 *faceNormals [[buffer(GeneratorBufferIndexFaceNormals)]],
+                                        device packed_float3 *vertexNormals [[buffer(GeneratorBufferIndexNormals)]],
+                                        uint2 tid [[thread_position_in_grid]])
 {
-    
 }
 
 #pragma mark - ZeroGenerator
