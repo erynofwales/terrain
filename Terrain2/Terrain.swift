@@ -201,7 +201,7 @@ class Terrain: NSObject {
             let normalsBuffer = mesh.vertexBuffers[BufferIndex.normals.rawValue]
             computeEncoder.setBuffer(normalsBuffer.buffer, offset: normalsBuffer.offset, index: GeneratorBufferIndex.normals.rawValue)
             computeEncoder.setBuffer(uniforms.buffer, offset: uniforms.offset, index: GeneratorBufferIndex.uniforms.rawValue)
-            computeEncoder.dispatchThreads(MTLSize(width: 2 * Int(segments.x * segments.y), height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+            computeEncoder.dispatchThreads(MTLSize(width: Int(segments.x + 1), height: Int(segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
         }

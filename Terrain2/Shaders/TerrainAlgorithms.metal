@@ -82,29 +82,30 @@ kernel void updateGeometryVertexNormals(constant packed_float3 *meshPositions [[
                                         device packed_float3 *vertexNormals [[buffer(GeneratorBufferIndexNormals)]],
                                         uint2 tid [[thread_position_in_grid]])
 {
-    float3 normal = float3();
+    const uint2 segs = uniforms.terrainSegments;
 
+    float3 normal = float3();
     uint adjacent = 0;
 
     if (tid.y > 0 && tid.x > 0) {
-        uint aIndex = 2 * segmentIndex(uint2(tid.x - 1, tid.y - 1), uniforms.terrainSegments) + 1;
+        uint aIndex = 2 * segmentIndex(uint2(tid.x - 1, tid.y - 1), segs) + 1;
         normal += faceNormals[aIndex];
         adjacent += 1;
     }
-    if (tid.y > 0 && tid.x < (uniforms.terrainSegments.x - 1)) {
-        uint segment = segmentIndex(uint2(tid.x, tid.y - 1), uniforms.terrainSegments);
+    if (tid.y > 0 && tid.x < segs.x) {
+        uint segment = segmentIndex(uint2(tid.x, tid.y - 1), segs);
         uint bIndex = 2 * segment;
         uint cIndex = 2 * segment + 1;
         normal += faceNormals[bIndex] + faceNormals[cIndex];
         adjacent += 2;
     }
-    if (tid.x < (uniforms.terrainSegments.x - 1) && tid.y < (uniforms.terrainSegments.y - 1)) {
-        uint dIndex = 2 * segmentIndex(tid, uniforms.terrainSegments);
+    if (tid.x < segs.x && tid.y < segs.y) {
+        uint dIndex = 2 * segmentIndex(tid, segs);
         normal += faceNormals[dIndex];
         adjacent += 1;
     }
-    if (tid.x > 0 && tid.y < (uniforms.terrainSegments.y - 1)) {
-        uint segment = segmentIndex(uint2(tid.x - 1, tid.y), uniforms.terrainSegments);
+    if (tid.x > 0 && tid.y < segs.y) {
+        uint segment = segmentIndex(uint2(tid.x - 1, tid.y), segs);
         uint eIndex = 2 * segment + 1;
         uint fIndex = 2 * segment;
         normal += faceNormals[eIndex] + faceNormals[fIndex];
@@ -113,8 +114,8 @@ kernel void updateGeometryVertexNormals(constant packed_float3 *meshPositions [[
 
     if (adjacent != 0) {
         normal = normalize(normal / float(adjacent));
-        uint vertexNormalIndex = segmentIndex(tid, uniforms.terrainSegments);
-        vertexNormals[vertexNormalIndex] = normal;
+        uint idx = segmentIndex(tid, segs);
+        vertexNormals[idx] = normal;
     }
 }
 
