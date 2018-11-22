@@ -189,12 +189,12 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         lights[0].enabled = true
-        lights[0].position = simd_float4(x: 2, y: 10, z: 5, w: 1)
-        lights[0].color = simd_float3(0.5, 0.5, 0)
+        lights[0].position = simd_float4(x: 2, y: 10, z: 2, w: 1)
+        lights[0].color = simd_float3(0.5, 0.5, 0.3)
     }
 
     private func populateMaterials() {
-        material[0].diffuseColor = simd_float3(0.8)
+        material[0].diffuseColor = simd_float3(0.5)
         material[0].specularColor = simd_float3(1)
         material[0].specularExponent = 10
     }
