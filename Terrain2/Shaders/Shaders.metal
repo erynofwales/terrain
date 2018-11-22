@@ -24,7 +24,7 @@ typedef struct {
 
 typedef struct {
     float4 position [[position]];
-    float4 eyeCoords;
+    float3 eyeCoords;
     float3 normal;
     float2 texCoord;
 } ColorInOut;
@@ -42,7 +42,7 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
     float4 eyeCoords = uniforms.modelViewMatrix * vertexCoords;
 
     out.position = uniforms.projectionMatrix * eyeCoords;
-    out.eyeCoords = eyeCoords;
+    out.eyeCoords = eyeCoords.xyz / eyeCoords.w;
     // TODO: Use the face normal.
     out.normal = normalize(in.normal);
     out.texCoord = in.texCoord;
@@ -51,23 +51,41 @@ vertex ColorInOut vertexShader(Vertex in [[stage_in]],
 }
 
 fragment float4 fragmentShader(ColorInOut in [[stage_in]],
+                               constant Light *lights [[buffer(BufferIndexLights)]],
+                               constant Material *materials [[buffer(BufferIndexMaterials)]],
                                constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]])
 {
+    // Compute the normal at this position.
     float3 normal = normalize(uniforms.normalMatrix * in.normal);
-    float3 lightDirection = normalize(float3(-8, 8, 1) - in.eyeCoords.xyz);
+
+    // Compute the vector pointing to the light from this position.
+    float3 lightDirection;
+    constant Light &light = lights[0];
+    if (light.position.w == 0.0) {
+        lightDirection = normalize(light.position.xyz);
+    } else {
+        lightDirection = normalize(light.position.xyz / light.position.w - in.eyeCoords);
+    }
+
+    // Compute the direction of the viewer from this position.
     float3 viewDirection = normalize(-in.eyeCoords.xyz);
-    float3 reflection = -reflect(lightDirection, normal);
 
     float4 out;
-    float lightDotNormal = dot(normal, lightDirection);
-    if (lightDotNormal <= 0.0) {
+    float lightDirDotNormal = dot(lightDirection, normal);
+    if (lightDirDotNormal <= 0.0) {
         // No color contribution to this pixel.
-        out = float4();
+        out = float4(0);
     } else {
-        float3 color = 0.8 * lightDotNormal * float3(0.6);
-        float reflectDotViewDirection = dot(reflection, viewDirection);
-        if (reflectDotViewDirection > 0.0) {
-            color += 0.4 * pow(reflectDotViewDirection, 10) * float3(0, 0, 1);
+        constant Material &material = materials[0];
+
+        // Comput the direction of reflection given the light direction and the normal at this point. Negate it because the vector returned points from the light to this position and we want it from this position toward the light.
+        float3 reflection = -reflect(lightDirection, normal);
+
+        float3 color = lightDirDotNormal * light.color * material.diffuseColor;
+        float reflectDotViewDir = dot(reflection, viewDirection);
+        if (reflectDotViewDir > 0.0) {
+            float factor = pow(reflectDotViewDir, material.specularExponent);
+            color += factor * material.specularColor * light.color;
         }
         out = float4(color, 1);
     }

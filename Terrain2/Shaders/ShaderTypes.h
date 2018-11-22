@@ -22,11 +22,13 @@
 #include <simd/simd.h>
 
 typedef NS_ENUM(NSInteger, BufferIndex) {
-    BufferIndexMeshPositions  = 0,
-    BufferIndexNormals        = 1,
-    BufferIndexMeshGenerics   = 2,
-    BufferIndexFaceNormals    = 3,
-    BufferIndexUniforms       = 4,
+    BufferIndexMeshPositions = 0,
+    BufferIndexNormals = 1,
+    BufferIndexMeshGenerics = 2,
+    BufferIndexFaceNormals = 3,
+    BufferIndexUniforms = 4,
+    BufferIndexLights = 5,
+    BufferIndexMaterials = 6,
 };
 
 typedef NS_ENUM(NSInteger, NormalBufferIndex) {

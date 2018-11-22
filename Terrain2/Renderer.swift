@@ -42,6 +42,11 @@ class Renderer: NSObject, MTKViewDelegate {
     var uniformBufferIndex = 0
     var uniforms: UnsafeMutablePointer<Uniforms>
 
+    var lightsBuffer: MTLBuffer
+    var lights: UnsafeMutablePointer<Light>
+    var materialBuffer: MTLBuffer
+    var material: UnsafeMutablePointer<Material>
+
     var projectionMatrix: matrix_float4x4 = matrix_float4x4()
     var rotation: Float = 0
 
@@ -103,7 +108,18 @@ class Renderer: NSObject, MTKViewDelegate {
         depthStateDesciptor.isDepthWriteEnabled = true
         self.depthState = device.makeDepthStencilState(descriptor:depthStateDesciptor)!
 
+        let lightsBufferLength = MemoryLayout<Light>.size * 4
+        self.lightsBuffer = self.device.makeBuffer(length: lightsBufferLength, options: .storageModeShared)!
+        self.lights = UnsafeMutableRawPointer(lightsBuffer.contents()).bindMemory(to: Light.self, capacity: 4)
+
+        let materialBufferLength = MemoryLayout<Material>.size
+        self.materialBuffer = self.device.makeBuffer(length: materialBufferLength, options: .storageModeShared)!
+        self.material = UnsafeMutableRawPointer(materialBuffer.contents()).bindMemory(to: Material.self, capacity: 1)
+
         super.init()
+
+        populateLights()
+        populateMaterials()
     }
 
     class func buildRenderPipelineWithDevice(device: MTLDevice,
@@ -183,6 +199,22 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         regenerationSemaphore.signal()
         return progress
+    }
+
+    private func populateLights() {
+        for i in 0..<4 {
+            lights[i].enabled = false
+        }
+
+        lights[0].enabled = true
+        lights[0].position = simd_float4(x: 2, y: 10, z: 5, w: 1)
+        lights[0].color = simd_float3(0.5, 0.5, 0)
+    }
+
+    private func populateMaterials() {
+        material[0].diffuseColor = simd_float3(0.8)
+        material[0].specularColor = simd_float3(1)
+        material[0].specularExponent = 10
     }
 
     private func updateDynamicBufferState() {
@@ -281,6 +313,9 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderEncoder.setVertexBuffer(terrain.faceNormalsBuffer, offset: 0, index: BufferIndex.faceNormals.rawValue)
                     renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
                     renderEncoder.setFragmentBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
+
+                    renderEncoder.setFragmentBuffer(lightsBuffer, offset: 0, index: BufferIndex.lights.rawValue)
+                    renderEncoder.setFragmentBuffer(materialBuffer, offset: 0, index: BufferIndex.materials.rawValue)
                     
                     for (index, element) in terrain.mesh.vertexDescriptor.layouts.enumerated() {
                         guard let layout = element as? MDLVertexBufferLayout else {
