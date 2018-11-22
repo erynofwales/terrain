@@ -37,7 +37,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     let regenerationSemaphore = DispatchSemaphore(value: 1)
 
-    var uniforms: PerFrameObject<Uniforms>
+    var geometryUniforms: PerFrameObject<Uniforms>
 
     var lightsBuffer: MTLBuffer
     var lights: UnsafeMutablePointer<Light>
@@ -68,7 +68,7 @@ class Renderer: NSObject, MTKViewDelegate {
         self.device = metalKitView.device!
         self.commandQueue = self.device.makeCommandQueue()!
 
-        uniforms = PerFrameObject(device: device, label: "Uniforms")
+        geometryUniforms = PerFrameObject(device: device, label: "Uniforms")
 
         metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
         metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
@@ -197,21 +197,21 @@ class Renderer: NSObject, MTKViewDelegate {
             }
         }
 
-        uniforms.pointer[0].projectionMatrix = projectionMatrix
+        geometryUniforms.pointer[0].projectionMatrix = projectionMatrix
 
         let rotationAxis = float3(0, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
         let viewMatrix = matrix4x4_translation(0.0, -2.0, -8.0)
         let modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
-        uniforms.pointer[0].modelViewMatrix = modelViewMatrix
+        geometryUniforms.pointer[0].modelViewMatrix = modelViewMatrix
         rotation += 0.003
 
         // Remove the fourth row and column from our model-view matrix. Since we're only doing rotations and translations (no scales), this serves as our normal transform matrix.
         let rotSclModelViewMatrix = float3x3(modelViewMatrix.columns.0.xyz, modelViewMatrix.columns.1.xyz, modelViewMatrix.columns.2.xyz)
-        uniforms.pointer[0].normalMatrix = rotSclModelViewMatrix
+        geometryUniforms.pointer[0].normalMatrix = rotSclModelViewMatrix
 
-        uniforms.pointer[0].terrainDimensions = terrain.dimensions
-        uniforms.pointer[0].terrainSegments = terrain.segments
+        geometryUniforms.pointer[0].terrainDimensions = terrain.dimensions
+        geometryUniforms.pointer[0].terrainSegments = terrain.segments
     }
 
     func draw(in view: MTKView) {
@@ -236,7 +236,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 inFlightSem.signal()
             }
             
-            uniforms.updateOffsets()
+            geometryUniforms.updateOffsets()
             
             self.updateGameState()
 
@@ -250,7 +250,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 didScheduleAlgorithmIteration = true
             }
 
-            terrain.scheduleGeometryUpdates(inCommandBuffer: commandBuffer, uniforms: uniforms)
+            terrain.scheduleGeometryUpdates(inCommandBuffer: commandBuffer, uniforms: geometryUniforms)
 
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid
             ///   holding onto the drawable and blocking the display pipeline any longer than necessary
@@ -273,8 +273,8 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderEncoder.setTriangleFillMode(drawLines ? .lines : .fill)
 
                     renderEncoder.setVertexBuffer(terrain.faceNormalsBuffer, offset: 0, index: BufferIndex.faceNormals.rawValue)
-                    renderEncoder.setVertexBuffer(uniforms.buffer, offset: uniforms.offset, index: BufferIndex.uniforms.rawValue)
-                    renderEncoder.setFragmentBuffer(uniforms.buffer, offset: uniforms.offset, index: BufferIndex.uniforms.rawValue)
+                    renderEncoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: BufferIndex.uniforms.rawValue)
+                    renderEncoder.setFragmentBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: BufferIndex.uniforms.rawValue)
 
                     renderEncoder.setFragmentBuffer(lightsBuffer, offset: 0, index: BufferIndex.lights.rawValue)
                     renderEncoder.setFragmentBuffer(materialBuffer, offset: 0, index: BufferIndex.materials.rawValue)
@@ -346,7 +346,7 @@ class Renderer: NSObject, MTKViewDelegate {
 
         encoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: NormalBufferIndex.points.rawValue)
         encoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: NormalBufferIndex.normals.rawValue)
-        encoder.setVertexBuffer(uniforms.buffer, offset: uniforms.offset, index: NormalBufferIndex.uniforms.rawValue)
+        encoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: NormalBufferIndex.uniforms.rawValue)
         encoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: terrain.mesh.vertexCount)
 
         encoder.popDebugGroup()
@@ -361,7 +361,7 @@ class Renderer: NSObject, MTKViewDelegate {
 
         encoder.setVertexBuffer(faceMidpointsBuffer, offset: 0, index: NormalBufferIndex.points.rawValue)
         encoder.setVertexBuffer(faceNormalsBuffer, offset: 0, index: NormalBufferIndex.normals.rawValue)
-        encoder.setVertexBuffer(uniforms.buffer, offset: uniforms.offset, index: NormalBufferIndex.uniforms.rawValue)
+        encoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: NormalBufferIndex.uniforms.rawValue)
         encoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: instanceCount)
 
         encoder.popDebugGroup()
