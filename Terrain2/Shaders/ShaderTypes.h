@@ -34,7 +34,9 @@ typedef NS_ENUM(NSInteger, BufferIndex) {
 typedef NS_ENUM(NSInteger, NormalBufferIndex) {
     NormalBufferIndexPoints = 0,
     NormalBufferIndexNormals = 1,
-    NormalBufferIndexUniforms = 2,
+    NormalBufferIndexGeometryUniforms = 2,
+    NormalBufferIndexNormalUniforms = 3,
+    NormalBufferIndexType = 4,
 };
 
 typedef NS_ENUM(NSInteger, VertexAttribute)
@@ -86,7 +88,7 @@ struct Material {
     float specularExponent;
 };
 
-typedef struct {
+struct Uniforms {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
     matrix_float3x3 normalMatrix;
@@ -97,7 +99,22 @@ typedef struct {
     simd_packed_float2 terrainDimensions;
     simd_packed_uint2 terrainSegments;
 #endif
-} Uniforms;
+};
+
+typedef NS_ENUM(NSInteger, NormalType) {
+    NormalTypeVertex = 1,
+    NormalTypeFace = 2,
+};
+
+struct NormalUniforms {
+#ifdef __METAL_VERSION__
+    simd::float3 vertexNormalColor;
+    simd::float3 faceNormalColor;
+#else
+    simd_float3 vertexNormalColor;
+    simd_float3 faceNormalColor;
+#endif
+};
 
 #endif /* ShaderTypes_h */
 

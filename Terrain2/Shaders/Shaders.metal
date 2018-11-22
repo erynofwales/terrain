@@ -94,22 +94,39 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
 
 #pragma mark - Normal Shaders
 
-vertex float4 normalVertexShader(constant packed_float3 *positions [[buffer(NormalBufferIndexPoints)]],
-                                 constant packed_float3 *normals [[buffer(NormalBufferIndexNormals)]],
-                                 constant Uniforms &uniforms [[buffer(NormalBufferIndexUniforms)]],
-                                 uint instID [[instance_id]],
-                                 uint vertID [[vertex_id]])
+struct NormalInOut {
+    float4 position [[position]];
+    float3 color;
+};
+
+vertex NormalInOut normalVertexShader(constant packed_float3 *positions [[buffer(NormalBufferIndexPoints)]],
+                                      constant packed_float3 *normals [[buffer(NormalBufferIndexNormals)]],
+                                      constant Uniforms &uniforms [[buffer(NormalBufferIndexGeometryUniforms)]],
+                                      constant NormalUniforms &normalUniforms [[buffer(NormalBufferIndexNormalUniforms)]],
+                                      constant NormalType &type [[buffer(NormalBufferIndexType)]],
+                                      uint instID [[instance_id]],
+                                      uint vertID [[vertex_id]])
 {
+    NormalInOut out;
     float3 v = positions[instID];
     if ( vertID == 1 )
     {
         v += 0.25 * normals[instID];
     }
-    float4 out = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v, 1);
+    out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v, 1);
+
+    if (type == NormalTypeFace) {
+        out.color = normalUniforms.faceNormalColor;
+    } else {
+        out.color = normalUniforms.vertexNormalColor;
+    }
+
     return out;
 }
 
-fragment half4 normalFragmentShader()
+fragment float4 normalFragmentShader(NormalInOut in [[stage_in]],
+                                     constant Uniforms &uniforms [[buffer(NormalBufferIndexGeometryUniforms)]],
+                                     constant NormalUniforms &normalUniforms [[buffer(NormalBufferIndexNormalUniforms)]])
 {
-    return half4(0, 1, 0, 1);
+    return float4(in.color, 1.0);
 }

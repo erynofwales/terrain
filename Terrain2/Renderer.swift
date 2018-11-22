@@ -38,6 +38,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let regenerationSemaphore = DispatchSemaphore(value: 1)
 
     var geometryUniforms: PerFrameObject<Uniforms>
+    var normalUniforms: PerFrameObject<NormalUniforms>
 
     var lightsBuffer: MTLBuffer
     var lights: UnsafeMutablePointer<Light>
@@ -68,7 +69,8 @@ class Renderer: NSObject, MTKViewDelegate {
         self.device = metalKitView.device!
         self.commandQueue = self.device.makeCommandQueue()!
 
-        geometryUniforms = PerFrameObject(device: device, label: "Uniforms")
+        geometryUniforms = PerFrameObject(device: device, label: "Geometry Uniforms")
+        normalUniforms = PerFrameObject(device: device, label: "Normal Uniforms")
 
         metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
         metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
@@ -212,6 +214,9 @@ class Renderer: NSObject, MTKViewDelegate {
 
         geometryUniforms.pointer[0].terrainDimensions = terrain.dimensions
         geometryUniforms.pointer[0].terrainSegments = terrain.segments
+
+        normalUniforms.pointer[0].faceNormalColor = simd_float3(0, 0.3, 1)
+        normalUniforms.pointer[0].vertexNormalColor = simd_float3(0, 1.0, 0)
     }
 
     func draw(in view: MTKView) {
@@ -237,6 +242,7 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             
             geometryUniforms.updateOffsets()
+            normalUniforms.updateOffsets()
             
             self.updateGameState()
 
@@ -344,9 +350,16 @@ class Renderer: NSObject, MTKViewDelegate {
         let vertexBuffer = terrain.mesh.vertexBuffers[BufferIndex.meshPositions.rawValue]
         let normalBuffer = terrain.mesh.vertexBuffers[BufferIndex.normals.rawValue]
 
+        var type = NormalType.vertex.rawValue
+
         encoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: NormalBufferIndex.points.rawValue)
         encoder.setVertexBuffer(normalBuffer.buffer, offset: normalBuffer.offset, index: NormalBufferIndex.normals.rawValue)
-        encoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: NormalBufferIndex.uniforms.rawValue)
+        encoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: NormalBufferIndex.geometryUniforms.rawValue)
+        encoder.setVertexBuffer(normalUniforms.buffer, offset: normalUniforms.offset, index: NormalBufferIndex.normalUniforms.rawValue)
+        encoder.setVertexBytes(&type, length: MemoryLayout<NSInteger>.size, index: NormalBufferIndex.type.rawValue)
+
+        encoder.setFragmentBuffer(normalUniforms.buffer, offset: normalUniforms.offset, index: NormalBufferIndex.normalUniforms.rawValue)
+
         encoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: terrain.mesh.vertexCount)
 
         encoder.popDebugGroup()
@@ -359,9 +372,16 @@ class Renderer: NSObject, MTKViewDelegate {
         let faceNormalsBuffer = terrain.faceNormalsBuffer
         let instanceCount = 2 * Int(terrain.segments.x * terrain.segments.y)
 
+        var type = NormalType.face.rawValue
+
         encoder.setVertexBuffer(faceMidpointsBuffer, offset: 0, index: NormalBufferIndex.points.rawValue)
         encoder.setVertexBuffer(faceNormalsBuffer, offset: 0, index: NormalBufferIndex.normals.rawValue)
-        encoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: NormalBufferIndex.uniforms.rawValue)
+        encoder.setVertexBuffer(geometryUniforms.buffer, offset: geometryUniforms.offset, index: NormalBufferIndex.geometryUniforms.rawValue)
+        encoder.setVertexBuffer(normalUniforms.buffer, offset: normalUniforms.offset, index: NormalBufferIndex.normalUniforms.rawValue)
+        encoder.setVertexBytes(&type, length: MemoryLayout<NSInteger>.size, index: NormalBufferIndex.type.rawValue)
+
+        encoder.setFragmentBuffer(normalUniforms.buffer, offset: normalUniforms.offset, index: NormalBufferIndex.normalUniforms.rawValue)
+
         encoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 2, instanceCount: instanceCount)
 
         encoder.popDebugGroup()
