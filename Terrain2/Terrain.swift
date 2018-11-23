@@ -162,7 +162,10 @@ class Terrain: NSObject {
             let texCoordBuffer = mesh.vertexBuffers[BufferIndex.meshGenerics.rawValue]
             computeEncoder.setBuffer(texCoordBuffer.buffer, offset: texCoordBuffer.offset, index: GeneratorBufferIndex.texCoords.rawValue)
             computeEncoder.setBuffer(uniforms.buffer, offset: uniforms.offset, index: GeneratorBufferIndex.uniforms.rawValue)
-            computeEncoder.dispatchThreads(MTLSize(width: Int(segments.x + 1), height: Int(segments.y + 1), depth: 1), threadsPerThreadgroup: MTLSize(width: 8, height: 8, depth: 1))
+
+            let threads = MTLSize(width: mesh.vertexCount, height: 1, depth: 1)
+            computeEncoder.dispatchThreads(threads, threadsPerThreadgroup: MTLSize(width: 64, height: 1, depth: 1))
+
             computeEncoder.popDebugGroup()
             computeEncoder.endEncoding()
         }

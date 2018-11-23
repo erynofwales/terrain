@@ -22,18 +22,16 @@ kernel void updateGeometryHeights(texture2d<float> texture [[texture(GeneratorTe
                                   constant float2 *texCoords [[buffer(GeneratorBufferIndexTexCoords)]],
                                   constant Uniforms &uniforms [[buffer(GeneratorBufferIndexUniforms)]],
                                   device packed_float3 *vertexes [[buffer(GeneratorBufferIndexMeshPositions)]],
-                                  uint2 tid [[thread_position_in_grid]])
+                                  uint tid [[thread_position_in_grid]])
 {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
 
-    const uint vIdx = tid.y * uniforms.terrainSegments.x + tid.x;
-
     // Get the height from the texture.
-    float2 texCoord = texCoords[vIdx];
+    float2 texCoord = texCoords[tid];
     float4 height = texture.sample(s, texCoord);
 
     // Update the vertex data.
-    vertexes[vIdx].y = height.r;
+    vertexes[tid].y = height.r;
 }
 
 kernel void updateGeometryNormals(constant packed_float3 *meshPositions [[buffer(GeneratorBufferIndexMeshPositions)]],
