@@ -210,13 +210,6 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     private func updateGameState() {
-        /// Update any game state before rendering
-        if iterateTerrainAlgorithm {
-            if terrain.generator.needsGPU {
-                terrain.generator.updateUniforms()
-            }
-        }
-
         geometryUniforms.pointer[0].projectionMatrix = camera.projectionMatrix
 
         let rotationAxis = float3(0, 1, 0)

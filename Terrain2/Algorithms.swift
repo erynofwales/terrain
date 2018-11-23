@@ -23,7 +23,6 @@ protocol TerrainGenerator {
     var needsGPU: Bool { get }
     var outTexture: MTLTexture { get }
 
-    func updateUniforms()
     func encode(in encoder: MTLComputeCommandEncoder)
     func render(progress: Progress) -> [Float]
 }
@@ -96,8 +95,6 @@ class ZeroAlgorithm: Kernel, TerrainGenerator {
     }
 
     // MARK: Algorithm
-
-    func updateUniforms() { }
 
     func render(progress: Progress) -> [Float] {
         return []
@@ -358,9 +355,6 @@ public class DiamondSquareGenerator: TerrainGenerator {
     }
 
     func encode(in encoder: MTLComputeCommandEncoder) {
-    }
-
-    func updateUniforms() {
     }
 }
 
