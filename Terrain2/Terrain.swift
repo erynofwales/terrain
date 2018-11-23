@@ -142,14 +142,8 @@ class Terrain: NSObject {
         let progress = Progress(totalUnitCount: 1)
         generatorQueue.async {
             progress.becomeCurrent(withPendingUnitCount: 1)
-
-            let heights = self.generator.render(progress: progress)
+            _ = self.generator.render(progress: progress)
             progress.completedUnitCount += 1
-
-            // TODO: Store heights
-
-            // TODO: Compute normals
-
             progress.resignCurrent()
             completion()
         }
