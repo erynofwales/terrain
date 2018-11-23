@@ -12,6 +12,7 @@
 		C018AD4021978E690094BE3C /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD3F21978E690094BE3C /* Queue.swift */; };
 		C018AD422197907B0094BE3C /* QueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C018AD412197907B0094BE3C /* QueueTests.swift */; };
 		C028A6A221A46796005DE718 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = C028A6A121A46796005DE718 /* Math.swift */; };
+		C06F150121A8649000458C5B /* DiamondSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06F150021A8649000458C5B /* DiamondSquare.swift */; };
 		C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08C589F218F46F000EAFC2D /* Algorithms.swift */; };
 		C08C58A2218F474E00EAFC2D /* TerrainAlgorithms.metal in Sources */ = {isa = PBXBuildFile; fileRef = C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */; };
 		C0C15A8E218DDD85007494E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C15A8D218DDD85007494E2 /* AppDelegate.swift */; };
@@ -52,6 +53,7 @@
 		C018AD412197907B0094BE3C /* QueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTests.swift; sourceTree = "<group>"; };
 		C028A6A121A46796005DE718 /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		C04A27A421A6FB4B00FCABFB /* Random.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Random.hh; sourceTree = "<group>"; };
+		C06F150021A8649000458C5B /* DiamondSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiamondSquare.swift; sourceTree = "<group>"; };
 		C08C589F218F46F000EAFC2D /* Algorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Algorithms.swift; sourceTree = "<group>"; };
 		C08C58A1218F474E00EAFC2D /* TerrainAlgorithms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TerrainAlgorithms.metal; sourceTree = "<group>"; };
 		C0C15A8A218DDD85007494E2 /* Terrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Terrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +131,15 @@
 			path = Shaders;
 			sourceTree = "<group>";
 		};
+		C06F14FF21A8647100458C5B /* Algorithms */ = {
+			isa = PBXGroup;
+			children = (
+				C08C589F218F46F000EAFC2D /* Algorithms.swift */,
+				C06F150021A8649000458C5B /* DiamondSquare.swift */,
+			);
+			path = Algorithms;
+			sourceTree = "<group>";
+		};
 		C0C15A81218DDD85007494E2 = {
 			isa = PBXGroup;
 			children = (
@@ -184,7 +195,7 @@
 				C0C15AB6218E2A90007494E2 /* Renderer.swift */,
 				C028A6A121A46796005DE718 /* Math.swift */,
 				C0C15AC5218E32B2007494E2 /* Terrain.swift */,
-				C08C589F218F46F000EAFC2D /* Algorithms.swift */,
+				C06F14FF21A8647100458C5B /* Algorithms */,
 				C018AD3F21978E690094BE3C /* Queue.swift */,
 				C018AD3E219728890094BE3C /* Shaders */,
 				C0C15ABB218E2A90007494E2 /* Assets.xcassets */,
@@ -355,6 +366,7 @@
 				C0C15AB7218E2A90007494E2 /* Renderer.swift in Sources */,
 				C0C15AB3218E2A90007494E2 /* AppDelegate.swift in Sources */,
 				C018AD4021978E690094BE3C /* Queue.swift in Sources */,
+				C06F150121A8649000458C5B /* DiamondSquare.swift in Sources */,
 				C08C58A0218F46F000EAFC2D /* Algorithms.swift in Sources */,
 				C028A6A221A46796005DE718 /* Math.swift in Sources */,
 			);
