@@ -51,7 +51,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var camera = MDLCamera()
     var terrain: Terrain
 
-    var drawLines = true {
+    var drawLines = false {
         didSet {
             print("Line drawing \(drawLines ? "enabled" : "disabled")")
         }
