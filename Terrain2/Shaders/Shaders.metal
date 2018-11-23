@@ -31,6 +31,12 @@ typedef struct {
 
 #pragma mark - Geometry Shaders
 
+float3 doLighting(constant Light &light,
+                  constant Material &material,
+                  float3 eyeCoords,
+                  float3 normal,
+                  float3 viewDirection);
+
 vertex ColorInOut vertexShader(Vertex in [[stage_in]],
                                constant packed_float3 *faceNormals [[buffer(BufferIndexFaceNormals)]],
                                constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]],
@@ -57,41 +63,64 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
 {
     float3 out = float3();
 
+    constant Material &material = materials[0];
+
     // Compute the normal at this position.
     float3 normal = normalize(uniforms.normalMatrix * in.normal);
+    float3 viewDirection = normalize(-in.eyeCoords.xyz);
 
     // Compute the vector pointing to the light from this position.
     for (int i = 0; i < 4; i++) {
         constant Light &light = lights[i];
-
-        float3 lightDirection;
-        if (light.position.w == 0.0) {
-            lightDirection = normalize(light.position.xyz);
-        } else {
-            lightDirection = normalize(light.position.xyz / light.position.w - in.eyeCoords);
-        }
-
-        // Compute the direction of the viewer from this position.
-        float3 viewDirection = normalize(-in.eyeCoords.xyz);
-
-
-        float lightDirDotNormal = dot(lightDirection, normal);
-        if (lightDirDotNormal > 0.0) {
-            constant Material &material = materials[0];
-
-            // Comput the direction of reflection given the light direction and the normal at this point. Negate it because the vector returned points from the light to this position and we want it from this position toward the light.
-            float3 reflection = -reflect(lightDirection, normal);
-
-            float3 color = lightDirDotNormal * light.color * material.diffuseColor;
-            float reflectDotViewDir = dot(reflection, viewDirection);
-            if (reflectDotViewDir > 0.0) {
-                float factor = pow(reflectDotViewDir, material.specularExponent);
-                color += factor * material.specularColor * light.color;
-            }
-            out += color;
+        if (light.enabled) {
+            out += doLighting(light, material, in.eyeCoords, normal, viewDirection);
         }
     }
     return float4(out, 1);
+}
+
+/// Compute Phong lighting contribution of `light` to the current fragment.
+///
+/// - parameter light: The light.
+/// - parameter material: Surface material.
+/// - parameter eyeCoords: Coordinates of the eye relevative to this fragment.
+/// - parameter normal: Normal vector to the current fragment.
+/// - parameter view: Normalized vector pointing to the view location.
+/// - return: Color contribution of the given light.
+float3 doLighting(constant Light &light,
+                  constant Material &material,
+                  float3 eyeCoords,
+                  float3 normal,
+                  float3 viewDirection)
+{
+    // Normalized vector pointing to the light from this fragment.
+    float3 lightDirection;
+    if (light.position.w == 0.0) {
+        // Directional light
+        lightDirection = normalize(light.position.xyz);
+    } else {
+        // Point light
+        lightDirection = normalize(light.position.xyz / light.position.w - eyeCoords);
+    }
+
+    float lightDirDotNormal = dot(lightDirection, normal);
+    if (lightDirDotNormal <= 0.0) {
+        // This light does not illuminate the surface.
+        return float3(0);
+    }
+
+    float3 reflection = lightDirDotNormal * light.color * material.diffuseColor;
+
+    // Normalized vector reflecting across the normal from the light.
+    float3 reflectedLightDirection = -reflect(lightDirection, normal);
+
+    float reflectDirDotViewDir = dot(reflectedLightDirection, viewDirection);
+    if (reflectDirDotViewDir > 0) {
+        // Ray is reflected toward the viewer, so add in the specular component.
+        float factor = pow(reflectDirDotViewDir, material.specularExponent);
+        reflection += factor * material.specularColor * light.color;
+    }
+    return reflection;
 }
 
 #pragma mark - Normal Shaders
