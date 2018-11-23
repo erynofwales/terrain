@@ -55,7 +55,7 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
                                constant Material *materials [[buffer(BufferIndexMaterials)]],
                                constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]])
 {
-    float4 out;
+    float3 out = float3();
 
     // Compute the normal at this position.
     float3 normal = normalize(uniforms.normalMatrix * in.normal);
@@ -88,10 +88,10 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
                 float factor = pow(reflectDotViewDir, material.specularExponent);
                 color += factor * material.specularColor * light.color;
             }
-            out += float4(color, 1);
+            out += color;
         }
     }
-    return out;
+    return float4(out, 1);
 }
 
 #pragma mark - Normal Shaders
