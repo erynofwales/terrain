@@ -124,7 +124,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
             }
         }
 
-        private var randomRange = Float(0)...Float(1)
+        private var randomRange = Float(-1)...Float(1)
 
         init(grid: Box) {
             // TODO: Assert log2(w) and log2(h) are integral values.
@@ -137,12 +137,14 @@ public class DiamondSquareGenerator: TerrainGenerator {
 
             os_signpost(.begin, log: Log, name: "DiamondSquare.render")
 
+            var boxSize = grid.size
+            var spread = randomRange
             var heightMap = [Float](repeating: 0, count: grid.size.w * grid.size.h)
 
             // 0. Set the corners to initial values if they haven't been set yet.
             for p in grid.corners {
                 let idx = convert(pointToIndex: p)
-                heightMap[idx] = Float.random(in: randomRange)
+                heightMap[idx] = Float.random(in: spread)
             }
             renderProgress.completedUnitCount += 1
 
@@ -153,7 +155,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
                     let idx = self.convert(pointToIndex: pt)
                     return heightMap[idx]
                 }
-                let midpointValue = Float.random(in: randomRange) + self.average(ofPoints: cornerValues)
+                let midpointValue = Float.random(in: spread) + self.average(ofPoints: cornerValues)
                 heightMap[convert(pointToIndex: midpoint)] = midpointValue
 
                 // 2. Square step. For each of the side midpoints of this box, compute its value.
@@ -163,8 +165,14 @@ public class DiamondSquareGenerator: TerrainGenerator {
                         let idx = self.convert(pointToIndex: pt)
                         return heightMap[idx]
                     }
-                    let ptValue = Float.random(in: randomRange) + self.average(ofPoints: cornerValues)
+                    let ptValue = Float.random(in: spread) + self.average(ofPoints: cornerValues)
                     heightMap[convert(pointToIndex: pt)] = ptValue
+                }
+
+                if box.size != boxSize {
+                    // Reduce the spread as we recurse down to smaller squares.
+                    spread = -(spread.lowerBound * 0.5)...(spread.upperBound * 0.5)
+                    boxSize = box.size
                 }
             }
 
