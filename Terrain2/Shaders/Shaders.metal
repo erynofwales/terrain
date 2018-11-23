@@ -55,39 +55,41 @@ fragment float4 fragmentShader(ColorInOut in [[stage_in]],
                                constant Material *materials [[buffer(BufferIndexMaterials)]],
                                constant Uniforms &uniforms [[buffer(BufferIndexUniforms)]])
 {
+    float4 out;
+
     // Compute the normal at this position.
     float3 normal = normalize(uniforms.normalMatrix * in.normal);
 
     // Compute the vector pointing to the light from this position.
-    float3 lightDirection;
-    constant Light &light = lights[0];
-    if (light.position.w == 0.0) {
-        lightDirection = normalize(light.position.xyz);
-    } else {
-        lightDirection = normalize(light.position.xyz / light.position.w - in.eyeCoords);
-    }
+    for (int i = 0; i < 4; i++) {
+        constant Light &light = lights[i];
 
-    // Compute the direction of the viewer from this position.
-    float3 viewDirection = normalize(-in.eyeCoords.xyz);
-
-    float4 out;
-    float lightDirDotNormal = dot(lightDirection, normal);
-    if (lightDirDotNormal <= 0.0) {
-        // No color contribution to this pixel.
-        out = float4(0);
-    } else {
-        constant Material &material = materials[0];
-
-        // Comput the direction of reflection given the light direction and the normal at this point. Negate it because the vector returned points from the light to this position and we want it from this position toward the light.
-        float3 reflection = -reflect(lightDirection, normal);
-
-        float3 color = lightDirDotNormal * light.color * material.diffuseColor;
-        float reflectDotViewDir = dot(reflection, viewDirection);
-        if (reflectDotViewDir > 0.0) {
-            float factor = pow(reflectDotViewDir, material.specularExponent);
-            color += factor * material.specularColor * light.color;
+        float3 lightDirection;
+        if (light.position.w == 0.0) {
+            lightDirection = normalize(light.position.xyz);
+        } else {
+            lightDirection = normalize(light.position.xyz / light.position.w - in.eyeCoords);
         }
-        out = float4(color, 1);
+
+        // Compute the direction of the viewer from this position.
+        float3 viewDirection = normalize(-in.eyeCoords.xyz);
+
+
+        float lightDirDotNormal = dot(lightDirection, normal);
+        if (lightDirDotNormal > 0.0) {
+            constant Material &material = materials[0];
+
+            // Comput the direction of reflection given the light direction and the normal at this point. Negate it because the vector returned points from the light to this position and we want it from this position toward the light.
+            float3 reflection = -reflect(lightDirection, normal);
+
+            float3 color = lightDirDotNormal * light.color * material.diffuseColor;
+            float reflectDotViewDir = dot(reflection, viewDirection);
+            if (reflectDotViewDir > 0.0) {
+                float factor = pow(reflectDotViewDir, material.specularExponent);
+                color += factor * material.specularColor * light.color;
+            }
+            out += float4(color, 1);
+        }
     }
     return out;
 }

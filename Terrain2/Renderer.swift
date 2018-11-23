@@ -181,8 +181,20 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         lights[0].enabled = true
-        lights[0].position = simd_float4(x: 2, y: 10, z: 2, w: 1)
-        lights[0].color = simd_float3(0.5, 0.5, 0.3)
+        lights[0].position = simd_float4(x: -12, y: 5, z: -12, w: 1)
+        lights[0].color = simd_float3(1, 0.5, 0)
+
+        lights[1].enabled = true
+        lights[1].position = simd_float4(x: 12, y: 5, z: -12, w: 1)
+        lights[1].color = simd_float3(1, 0, 1)
+
+        lights[2].enabled = true
+        lights[2].position = simd_float4(x: -12, y: 5, z: 12, w: 1)
+        lights[2].color = simd_float3(0, 1, 1)
+
+        lights[3].enabled = true
+        lights[3].position = simd_float4(x: 12, y: 5, z: 12, w: 1)
+        lights[3].color = simd_float3(1, 1, 0)
     }
 
     private func populateMaterials() {
