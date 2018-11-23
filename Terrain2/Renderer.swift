@@ -48,6 +48,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var projectionMatrix: matrix_float4x4 = matrix_float4x4()
     var rotation: Float = 0
 
+    var camera = MDLCamera()
     var terrain: Terrain
 
     var drawLines = true {
@@ -109,6 +110,11 @@ class Renderer: NSObject, MTKViewDelegate {
         self.material = UnsafeMutableRawPointer(materialBuffer.contents()).bindMemory(to: Material.self, capacity: 1)
 
         super.init()
+
+        camera.nearVisibilityDistance = 0.1
+        camera.farVisibilityDistance = 100
+        camera.focalLength = 50
+        camera.look(at: float3(0), from: float3(0, 2, 8))
 
         populateLights()
         populateMaterials()
@@ -211,11 +217,11 @@ class Renderer: NSObject, MTKViewDelegate {
             }
         }
 
-        geometryUniforms.pointer[0].projectionMatrix = projectionMatrix
+        geometryUniforms.pointer[0].projectionMatrix = camera.projectionMatrix
 
         let rotationAxis = float3(0, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
-        let viewMatrix = matrix4x4_translation(0.0, -2.0, -8.0)
+        let viewMatrix = camera.transform!.matrix.inverse
         let modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
         geometryUniforms.pointer[0].modelViewMatrix = modelViewMatrix
         rotation += 0.003
