@@ -38,41 +38,41 @@ class DiamondSquareAlgorithmTests: XCTestCase {
 
     // MARK: Diamond Corners
 
-    func testDiamondCornersNorth() {
-        let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 0), diamondSize: grid.size)
-        XCTAssertEqual(corners.count, 4)
-        XCTAssertEqual(corners[0], Point(x: 2, y: 2))
-        XCTAssertEqual(corners[1], Point(x: 0, y: 0))
-        XCTAssertEqual(corners[2], Point(x: 2, y: 2))
-        XCTAssertEqual(corners[3], Point(x: 4, y: 0))
-    }
-
-    func testDiamondCornersWest() {
-        let corners = alg.diamondCorners(forPoint: Point(x: 0, y: 2), diamondSize: grid.size)
-        XCTAssertEqual(corners.count, 4)
-        XCTAssertEqual(corners[0], Point(x: 0, y: 0))
-        XCTAssertEqual(corners[1], Point(x: 2, y: 2))
-        XCTAssertEqual(corners[2], Point(x: 0, y: 4))
-        XCTAssertEqual(corners[3], Point(x: 2, y: 2))
-    }
-
-    func testDiamondCornersSouth() {
-        let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 4), diamondSize: grid.size)
-        XCTAssertEqual(corners.count, 4)
-        XCTAssertEqual(corners[0], Point(x: 2, y: 2))
-        XCTAssertEqual(corners[1], Point(x: 0, y: 4))
-        XCTAssertEqual(corners[2], Point(x: 2, y: 2))
-        XCTAssertEqual(corners[3], Point(x: 4, y: 4))
-    }
-
-    func testDiamondCornersEast() {
-        let corners = alg.diamondCorners(forPoint: Point(x: 4, y: 2), diamondSize: grid.size)
-        XCTAssertEqual(corners.count, 4)
-        XCTAssertEqual(corners[0], Point(x: 4, y: 0))
-        XCTAssertEqual(corners[1], Point(x: 2, y: 2))
-        XCTAssertEqual(corners[2], Point(x: 4, y: 4))
-        XCTAssertEqual(corners[3], Point(x: 2, y: 2))
-    }
+//    func testDiamondCornersNorth() {
+//        let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 0), diamondSize: grid.size)
+//        XCTAssertEqual(corners.count, 4)
+//        XCTAssertEqual(corners[0], Point(x: 2, y: 2))
+//        XCTAssertEqual(corners[1], Point(x: 0, y: 0))
+//        XCTAssertEqual(corners[2], Point(x: 2, y: 2))
+//        XCTAssertEqual(corners[3], Point(x: 4, y: 0))
+//    }
+//
+//    func testDiamondCornersWest() {
+//        let corners = alg.diamondCorners(forPoint: Point(x: 0, y: 2), diamondSize: grid.size)
+//        XCTAssertEqual(corners.count, 4)
+//        XCTAssertEqual(corners[0], Point(x: 0, y: 0))
+//        XCTAssertEqual(corners[1], Point(x: 2, y: 2))
+//        XCTAssertEqual(corners[2], Point(x: 0, y: 4))
+//        XCTAssertEqual(corners[3], Point(x: 2, y: 2))
+//    }
+//
+//    func testDiamondCornersSouth() {
+//        let corners = alg.diamondCorners(forPoint: Point(x: 2, y: 4), diamondSize: grid.size)
+//        XCTAssertEqual(corners.count, 4)
+//        XCTAssertEqual(corners[0], Point(x: 2, y: 2))
+//        XCTAssertEqual(corners[1], Point(x: 0, y: 4))
+//        XCTAssertEqual(corners[2], Point(x: 2, y: 2))
+//        XCTAssertEqual(corners[3], Point(x: 4, y: 4))
+//    }
+//
+//    func testDiamondCornersEast() {
+//        let corners = alg.diamondCorners(forPoint: Point(x: 4, y: 2), diamondSize: grid.size)
+//        XCTAssertEqual(corners.count, 4)
+//        XCTAssertEqual(corners[0], Point(x: 4, y: 0))
+//        XCTAssertEqual(corners[1], Point(x: 2, y: 2))
+//        XCTAssertEqual(corners[2], Point(x: 4, y: 4))
+//        XCTAssertEqual(corners[3], Point(x: 2, y: 2))
+//    }
 }
 
 class DiamondSquareBoxTests: XCTestCase {
@@ -102,25 +102,25 @@ class DiamondSquareBoxTests: XCTestCase {
             Box(origin: Point(x: 0, y: 2), size: Size(w: 3, h: 3)),
             Box(origin: Point(x: 2, y: 2), size: Size(w: 3, h: 3)),
 
-            Box(origin: Point(x: 0, y: 0), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 1, y: 0), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 0, y: 1), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 1, y: 1), size: Size(w: 2, h: 2)),
-
-            Box(origin: Point(x: 2, y: 0), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 3, y: 0), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 2, y: 1), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 3, y: 1), size: Size(w: 2, h: 2)),
-
-            Box(origin: Point(x: 0, y: 2), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 1, y: 2), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 0, y: 3), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 1, y: 3), size: Size(w: 2, h: 2)),
-
-            Box(origin: Point(x: 2, y: 2), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 3, y: 2), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 2, y: 3), size: Size(w: 2, h: 2)),
-            Box(origin: Point(x: 3, y: 3), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 0, y: 0), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 1, y: 0), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 0, y: 1), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 1, y: 1), size: Size(w: 2, h: 2)),
+//
+//            Box(origin: Point(x: 2, y: 0), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 3, y: 0), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 2, y: 1), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 3, y: 1), size: Size(w: 2, h: 2)),
+//
+//            Box(origin: Point(x: 0, y: 2), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 1, y: 2), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 0, y: 3), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 1, y: 3), size: Size(w: 2, h: 2)),
+//
+//            Box(origin: Point(x: 2, y: 2), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 3, y: 2), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 2, y: 3), size: Size(w: 2, h: 2)),
+//            Box(origin: Point(x: 3, y: 3), size: Size(w: 2, h: 2)),
         ].reversed()
 
         let prog = Progress(totalUnitCount: 1)

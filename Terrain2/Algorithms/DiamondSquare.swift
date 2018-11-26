@@ -85,7 +85,7 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         var subdivisions: [Box] {
-            guard size.w > 2 && size.h > 2 else {
+            guard size.w > 3 && size.h > 3 else {
                 return []
             }
             let halfSize = size.half
@@ -159,15 +159,20 @@ public class DiamondSquareGenerator: TerrainGenerator {
                 heightMap[convert(pointToIndex: midpoint)] = midpointValue
 
                 // 2. Square step. For each of the side midpoints of this box, compute its value.
-                for pt in box.sideMidpoints {
-                    let corners = diamondCorners(forPoint: pt, diamondSize: box.size)
-                    let cornerValues = corners.map { (pt: Point) -> Float in
-                        let idx = self.convert(pointToIndex: pt)
-                        return heightMap[idx]
-                    }
-                    let ptValue = Float.random(in: spread) + self.average(ofPoints: cornerValues)
-                    heightMap[convert(pointToIndex: pt)] = ptValue
+
+                func updateHeight(for p: Point, a: Point, b: Point) {
+                    let aValue = heightMap[convert(pointToIndex: a)]
+                    let bValue = heightMap[convert(pointToIndex: b)]
+                    let avg = 0.5 * (aValue + bValue)
+                    let rand = Float.random(in: spread)
+                    let value = avg + rand
+                    heightMap[convert(pointToIndex: p)] = value
                 }
+
+                updateHeight(for: box.north, a: box.northeast, b: box.northwest)
+                updateHeight(for: box.west, a: box.northwest, b: box.southwest)
+                updateHeight(for: box.south, a: box.southwest, b: box.southeast)
+                updateHeight(for: box.east, a: box.southeast, b: box.northeast)
 
                 if box.size != boxSize {
                     // Reduce the spread as we recurse down to smaller squares.
@@ -182,25 +187,30 @@ public class DiamondSquareGenerator: TerrainGenerator {
         }
 
         /// Find our diamond's corners, wrapping around the grid if needed.
-        func diamondCorners(forPoint pt: Point, diamondSize: Size) -> [Point] {
-            let halfSize = diamondSize.half
-            var corners = [Point(x: pt.x, y: pt.y - halfSize.h),
-                           Point(x: pt.x - halfSize.w, y: pt.y),
-                           Point(x: pt.x, y: pt.y + halfSize.h),
-                           Point(x: pt.x + halfSize.w, y: pt.y)]
-            for i in 0..<corners.count {
-                if corners[i].x < 0 {
-                    corners[i].x += grid.size.w - 1
-                } else if corners[i].x >= grid.size.w {
-                    corners[i].x -= grid.size.w - 1
-                } else if corners[i].y < 0 {
-                    corners[i].y += grid.size.h - 1
-                } else if corners[i].y >= grid.size.h {
-                    corners[i].y -= grid.size.h - 1
-                }
-            }
-            return corners
-        }
+//        func diamondCorners(forPoint pt: Point, diamondSize: Size) -> [Point] {
+//            let halfSize = diamondSize.half
+//
+//            func ptIsValid(pt: Point) -> Bool {
+//                return pt.x >= origin.x && pt.x < size.w && pt.y >= origin.y && pt.y < size.h
+//            }
+//
+//            var corners = [Point(x: pt.x, y: pt.y - halfSize.h),
+//                           Point(x: pt.x - halfSize.w, y: pt.y),
+//                           Point(x: pt.x, y: pt.y + halfSize.h),
+//                           Point(x: pt.x + halfSize.w, y: pt.y)].filter(ptIsValid)
+//            for i in 0..<corners.count {
+//                if corners[i].x < 0 {
+//                    corners[i].x += grid.size.w - 1
+//                } else if corners[i].x >= grid.size.w {
+//                    corners[i].x -= grid.size.w - 1
+//                } else if corners[i].y < 0 {
+//                    corners[i].y += grid.size.h - 1
+//                } else if corners[i].y >= grid.size.h {
+//                    corners[i].y -= grid.size.h - 1
+//                }
+//            }
+//            return corners
+//        }
 
         func average(ofPoints pts: [Float]) -> Float {
             let scale: Float = 1.0 / Float(pts.count)
