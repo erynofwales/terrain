@@ -114,7 +114,7 @@ class Renderer: NSObject, MTKViewDelegate {
         camera.nearVisibilityDistance = 0.1
         camera.farVisibilityDistance = 100
         camera.focalLength = 35
-        camera.look(at: float3(0), from: float3(0, 2, 8))
+        camera.look(at: float3(0), from: float3(0, 5, 12))
 
         populateLights()
         populateMaterials()

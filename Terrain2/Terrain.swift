@@ -109,7 +109,7 @@ class Terrain: NSObject {
             print("Couldn't create algorithm")
             return nil
         }
-        gen.roughness = 0.05
+        gen.roughness = 1.0
         generator = gen
 
         do {
