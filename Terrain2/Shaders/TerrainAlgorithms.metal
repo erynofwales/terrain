@@ -82,7 +82,7 @@ kernel void updateGeometryVertexNormals(constant packed_float3 *meshPositions [[
 {
     const uint2 segs = uniforms.terrainSegments;
 
-    float3 normal = float3();
+    float3 normal = float3(0);
     uint adjacent = 0;
 
     if (tid.x > 0 && tid.y > 0) {
@@ -90,19 +90,19 @@ kernel void updateGeometryVertexNormals(constant packed_float3 *meshPositions [[
         normal += faceNormals[aIndex];
         adjacent += 1;
     }
-    if (tid.x > 0 && tid.y < segs.y) {
+    if (tid.x > 0 && tid.y <= segs.y) {
         uint segment = segmentIndex(uint2(tid.x - 1, tid.y), segs);
         uint bIndex = 2 * segment;
         uint cIndex = 2 * segment + 1;
         normal += faceNormals[bIndex] + faceNormals[cIndex];
         adjacent += 2;
     }
-    if (tid.x < segs.x && tid.y < segs.y) {
+    if (tid.x <= segs.x && tid.y <= segs.y) {
         uint dIndex = 2 * segmentIndex(tid, segs);
         normal += faceNormals[dIndex];
         adjacent += 1;
     }
-    if (tid.x < segs.x && tid.y > 0) {
+    if (tid.x <= segs.x && tid.y > 0) {
         uint segment = segmentIndex(uint2(tid.x, tid.y - 1), segs);
         uint eIndex = 2 * segment + 1;
         uint fIndex = 2 * segment;
@@ -112,7 +112,7 @@ kernel void updateGeometryVertexNormals(constant packed_float3 *meshPositions [[
 
     if (adjacent != 0) {
         normal = normalize(normal / float(adjacent));
-        uint idx = segmentIndex(tid, segs) + 1;
+        uint idx = tid.y * (segs.x + 1) + tid.x;
         vertexNormals[idx] = normal;
     }
 }
